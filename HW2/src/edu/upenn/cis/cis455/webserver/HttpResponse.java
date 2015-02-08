@@ -12,6 +12,7 @@ public class HttpResponse {
 	static final Logger logger = Logger.getLogger(HttpResponse.class);	
 	
 	private DataOutputStream out;
+	private String path;
 	
 	final static String htmlStart = "<!DOCTYPE html><html><body>";
 	final static String htmlEnd = "</body></html>";
@@ -25,14 +26,14 @@ public class HttpResponse {
 	
 	public void createResponse(String path){
 		logger.info("Generating response ...");
-		logger.info(path);
+		this.path = path;
 		File f = new File(path);
 		if (f.exists()) {
 			logger.info("File exists");
 			try {
 				out.writeBytes(OK);
 				out.writeBytes("\r\n");
-				if (f.isFile()) sendFile(path);
+				if (f.isFile()) sendFile();
 				else if (f.isDirectory()) sendDirectory(f.list());
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -47,7 +48,7 @@ public class HttpResponse {
 		}
 	}
 	
-	public void sendFile(String path) throws IOException {
+	public void sendFile() throws IOException {
 		logger.info(String.format("Sending file at path %s", path));
 		FileInputStream fins = new FileInputStream(path);
 		byte[] buffer = new byte[1024];
@@ -63,9 +64,16 @@ public class HttpResponse {
 	}
 	
 	public void sendDirectory(String contents[]) throws IOException {
+		out.writeBytes(htmlStart);
+		out.writeBytes(String.format("Directory at: %s", path));
+		out.writeBytes("<ul>");
 		for (int i = 0; i < contents.length; i++) {
+			out.writeBytes("<li>");
 			out.writeBytes(contents[i] + "\r\n");
+			out.writeBytes("</li>");
 		}
+		out.writeBytes("</ul>");
+		out.writeBytes(htmlEnd);
 		out.close();
 	}
 }
