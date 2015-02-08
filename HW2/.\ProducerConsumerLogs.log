@@ -1,0 +1,735 @@
+Starting server...
+Invalid args: required [port] [root directory]
+Starting server...
+Invalid args: required [port] [root directory]
+Starting server...
+Invalid args: required [port] [root directory]
+Starting server...
+Invalid args: required [port] [root directory]
+Starting server...
+Invalid args: required [port] [root directory]
+Starting server...
+Invalid args: required [port] [root directory]
+Starting server...
+Starting server...
+Starting server...
+Starting server...
+Starting server...
+Invalid args: required [port] [root directory]
+Starting server...
+Attempting to start server at port 8080
+Attempting to start server...
+Server running on port 8080
+Connection established 
+Attempting to start server...
+Server running on port 8080
+Connection established 
+Attempting to start server...
+Server running on port 8080
+Connection established 
+Recieving request...
+GET / HTTP/1.1
+Host: 10.0.0.8:8080
+Attempting to start server...
+Server running on port 8080
+Connection established 
+Recieving request...
+GET / HTTP/1.1
+Host: 10.0.0.8:8080
+Connection: keep-alive
+Cache-Control: max-age=0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.94 Safari/537.36
+Accept-Encoding: gzip, deflate, sdch
+Accept-Language: en-US,en;q=0.8
+Attempting to start server...
+Server running on port 8080
+Connection established 
+Recieving request...
+GET / HTTP/1.1
+Host: 10.0.0.8:8080
+Connection: keep-alive
+Cache-Control: max-age=0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.94 Safari/537.36
+Accept-Encoding: gzip, deflate, sdch
+Accept-Language: en-US,en;q=0.8
+Attempting to start server...
+Server running on port 8080
+Connection established 
+Recieving request...
+GET / HTTP/1.1
+Host: 10.0.0.8:8080
+Connection: keep-alive
+Cache-Control: max-age=0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.94 Safari/537.36
+Accept-Encoding: gzip, deflate, sdch
+Accept-Language: en-US,en;q=0.8
+Attempting to start server...
+Server running on port 8080
+Connection established 
+Recieving request...
+GET / HTTP/1.1
+Host: 10.0.0.8:8080
+Connection: keep-alive
+Cache-Control: max-age=0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.94 Safari/537.36
+Accept-Encoding: gzip, deflate, sdch
+Accept-Language: en-US,en;q=0.8
+Completed reqest. Closing client socket.
+Connection established 
+Recieving request...
+GET / HTTP/1.1
+Host: 10.0.0.8:8080
+Connection: keep-alive
+Cache-Control: max-age=0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.94 Safari/537.36
+Accept-Encoding: gzip, deflate, sdch
+Accept-Language: en-US,en;q=0.8
+Completed reqest. Closing client socket.
+Connection established 
+Recieving request...
+GET / HTTP/1.1
+Host: 10.0.0.8:8080
+Connection: keep-alive
+Cache-Control: max-age=0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.94 Safari/537.36
+Accept-Encoding: gzip, deflate, sdch
+Accept-Language: en-US,en;q=0.8
+Completed reqest. Closing client socket.
+Connection established 
+Recieving request...
+GET / HTTP/1.1
+Host: 10.0.0.8:8080
+Connection: keep-alive
+Cache-Control: max-age=0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.94 Safari/537.36
+Accept-Encoding: gzip, deflate, sdch
+Accept-Language: en-US,en;q=0.8
+Completed reqest. Closing client socket.
+Connection established 
+Recieving request...
+GET / HTTP/1.1
+Host: 10.0.0.8:8080
+Connection: keep-alive
+Cache-Control: max-age=0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.94 Safari/537.36
+Accept-Encoding: gzip, deflate, sdch
+Accept-Language: en-US,en;q=0.8
+Completed reqest. Closing client socket.
+Connection established 
+Recieving request...
+GET / HTTP/1.1
+Host: 10.0.0.8:8080
+Connection: keep-alive
+Cache-Control: max-age=0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.94 Safari/537.36
+Accept-Encoding: gzip, deflate, sdch
+Accept-Language: en-US,en;q=0.8
+Completed reqest. Closing client socket.
+Attempting to start server...
+Server running on port 8080
+Connection established 
+Recieving request...
+GET /kitten.jpg HTTP/1.1
+Host: 10.0.0.8:8080
+Connection: keep-alive
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.94 Safari/537.36
+Accept-Encoding: gzip, deflate, sdch
+Accept-Language: en-US,en;q=0.8
+Generating response...
+Closing client socket.
+Connection established 
+Recieving request...
+GET /favicon.ico HTTP/1.1
+Host: 10.0.0.8:8080
+Connection: keep-alive
+Accept: */*
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.94 Safari/537.36
+Accept-Encoding: gzip, deflate, sdch
+Accept-Language: en-US,en;q=0.8
+Generating response...
+Closing client socket.
+Connection established 
+Recieving request...
+GET /kitten.jpg HTTP/1.1
+Host: 10.0.0.8:8080
+Connection: keep-alive
+Pragma: no-cache
+Cache-Control: no-cache
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.94 Safari/537.36
+Accept-Encoding: gzip, deflate, sdch
+Accept-Language: en-US,en;q=0.8
+Generating response...
+Closing client socket.
+Connection established 
+Recieving request...
+GET /kitten.jpg HTTP/1.1
+Host: 10.0.0.8:8080
+Connection: keep-alive
+Pragma: no-cache
+Cache-Control: no-cache
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.94 Safari/537.36
+Accept-Encoding: gzip, deflate, sdch
+Accept-Language: en-US,en;q=0.8
+Generating response...
+Closing client socket.
+Connection established 
+Closing client socket.
+Attempting to start server...
+Server running on port 8080
+Connection established 
+Recieving request...
+GET /kitten.jpg HTTP/1.1
+Host: 10.0.0.8:8080
+Connection: keep-alive
+Pragma: no-cache
+Cache-Control: no-cache
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.94 Safari/537.36
+Accept-Encoding: gzip, deflate, sdch
+Accept-Language: en-US,en;q=0.8
+Generating response...
+Closing client socket.
+Attempting to start server...
+Server running on port 8080
+Connection established 
+Recieving request...
+GET /kitten.jpg HTTP/1.1
+Host: 10.0.0.8:8080
+Connection: keep-alive
+Pragma: no-cache
+Cache-Control: no-cache
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.94 Safari/537.36
+Accept-Encoding: gzip, deflate, sdch
+Accept-Language: en-US,en;q=0.8
+Generating response for path ~/Documents/kitten.jpg
+Closing client socket.
+Attempting to start server...
+Attempting to start server...
+Connection established 
+Recieving request...
+GET /kitten.jpg HTTP/1.1
+Host: 10.0.0.8:8080
+Connection: keep-alive
+Pragma: no-cache
+Cache-Control: no-cache
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.94 Safari/537.36
+Accept-Encoding: gzip, deflate, sdch
+Accept-Language: en-US,en;q=0.8
+Generating response for path ~/Documents/kitten.jpg
+Closing client socket.
+Connection established 
+Closing client socket.
+Attempting to start server...
+Server running on port 8080
+Connection established 
+Recieving request...
+GET /kitten.jpg HTTP/1.1
+Host: 10.0.0.8:8080
+Connection: keep-alive
+Pragma: no-cache
+Cache-Control: no-cache
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.94 Safari/537.36
+Accept-Encoding: gzip, deflate, sdch
+Accept-Language: en-US,en;q=0.8
+Generating response for path ~/home/cis455/Documents/kitten.jpg
+Closing client socket.
+Connection established 
+Recieving request...
+GET / HTTP/1.1
+Host: 10.0.2.15:8080
+User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:28.0) Gecko/20100101 Firefox/28.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate
+Connection: keep-alive
+Generating response for path ~/home/cis455/Documents/
+Closing client socket.
+Connection established 
+Recieving request...
+GET /favicon.ico HTTP/1.1
+Host: 10.0.2.15:8080
+User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:28.0) Gecko/20100101 Firefox/28.0
+Accept: image/png,image/*;q=0.8,*/*;q=0.5
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate
+Connection: keep-alive
+Generating response for path ~/home/cis455/Documents/favicon.ico
+Closing client socket.
+Connection established 
+Recieving request...
+GET /favicon.ico HTTP/1.1
+Host: 10.0.2.15:8080
+User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:28.0) Gecko/20100101 Firefox/28.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate
+Connection: keep-alive
+Generating response for path ~/home/cis455/Documents/favicon.ico
+Closing client socket.
+Connection established 
+Recieving request...
+GET /kittens.jpg HTTP/1.1
+Host: 10.0.2.15:8080
+User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:28.0) Gecko/20100101 Firefox/28.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate
+Connection: keep-alive
+Generating response for path ~/home/cis455/Documents/kittens.jpg
+Closing client socket.
+Connection established 
+Recieving request...
+GET /kittens.jpg HTTP/1.1
+Host: 10.0.2.15:8080
+User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:28.0) Gecko/20100101 Firefox/28.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate
+Connection: keep-alive
+Cache-Control: max-age=0
+Generating response for path ~/home/cis455/Documents/kittens.jpg
+Closing client socket.
+Attempting to start server...
+Server running on port 8080
+Connection established 
+Recieving request...
+GET /Assignment1.pdf HTTP/1.1
+Host: 10.0.0.8:8080
+Connection: keep-alive
+Pragma: no-cache
+Cache-Control: no-cache
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.94 Safari/537.36
+Accept-Encoding: gzip, deflate, sdch
+Accept-Language: en-US,en;q=0.8
+Generating response for path ~/Users/britte/Dropbox/CIS 455/Homework/Assignment1.pdf
+Closing client socket.
+Connection established 
+Closing client socket.
+Attempting to start server...
+Server running on port 8080
+Connection established 
+Recieving request...
+GET /Assignment1.pdf HTTP/1.1
+Host: 10.0.0.8:8080
+Connection: keep-alive
+Pragma: no-cache
+Cache-Control: no-cache
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.94 Safari/537.36
+Accept-Encoding: gzip, deflate, sdch
+Accept-Language: en-US,en;q=0.8
+Generating response for path ~/Users/britte/Dropbox/CIS455/Homework/Assignment1.pdf
+Closing client socket.
+Attempting to start server...
+Server running on port 8080
+Connection established 
+Recieving request...
+GET /Assignment1.pdf HTTP/1.1
+Host: 10.0.0.8:8080
+Connection: keep-alive
+Pragma: no-cache
+Cache-Control: no-cache
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.94 Safari/537.36
+Accept-Encoding: gzip, deflate, sdch
+Accept-Language: en-US,en;q=0.8
+Generating response for path ~/Dropbox/CIS455/Homework/Assignment1.pdf
+Closing client socket.
+Connection established 
+Closing client socket.
+Attempting to start server...
+Server running on port 8080
+Connection established 
+Recieving request...
+GET /Assignment1.pdf HTTP/1.1
+Host: 10.0.2.15:8080
+User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:28.0) Gecko/20100101 Firefox/28.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate
+Connection: keep-alive
+Generating response for path ~/Documents/Assignment1.pdf
+Closing client socket.
+Attempting to start server...
+Server running on port 8080
+Connection established 
+Recieving request...
+GET /Assignment1.pdf HTTP/1.1
+Host: 10.0.2.15:8080
+User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:28.0) Gecko/20100101 Firefox/28.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate
+Connection: keep-alive
+Cache-Control: max-age=0
+Generating response for path ~/Documents/Assignment1.pdf
+Closing client socket.
+Attempting to start server...
+Server running on port 8080
+Connection established 
+Recieving request...
+GET /Assignment1.pdf HTTP/1.1
+Host: 10.0.2.15:8080
+User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:28.0) Gecko/20100101 Firefox/28.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate
+Connection: keep-alive
+Cache-Control: max-age=0
+Generating response for path ~/Documents/Assignment1.pdf
+Closing client socket.
+Attempting to start server...
+Server running on port 8080
+Connection established 
+Recieving request...
+GET /kitten.jpg HTTP/1.1
+Host: 10.0.2.15:8080
+User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:28.0) Gecko/20100101 Firefox/28.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate
+Connection: keep-alive
+Generating response for path ~/Documents/kitten.jpg
+Closing client socket.
+Connection established 
+Recieving request...
+GET /Assignment1.pdf HTTP/1.1
+Host: 10.0.2.15:8080
+User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:28.0) Gecko/20100101 Firefox/28.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate
+Connection: keep-alive
+Cache-Control: max-age=0
+Generating response for path ~/Documents/Assignment1.pdf
+Closing client socket.
+Attempting to start server...
+Server running on port 8080
+Connection established 
+Recieving request...
+GET /Assignment1.pdf HTTP/1.1
+Host: 10.0.2.15:8080
+User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:28.0) Gecko/20100101 Firefox/28.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate
+Connection: keep-alive
+Cache-Control: max-age=0
+Generating response ...
+Closing client socket.
+Attempting to start server...
+Server running on port 8080
+Connection established 
+Recieving request...
+GET /Assignment1.pdf HTTP/1.1
+Host: 10.0.2.15:8080
+User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:28.0) Gecko/20100101 Firefox/28.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate
+Connection: keep-alive
+Cache-Control: max-age=0
+Generating response ...
+Closing client socket.
+Attempting to start server...
+Attempting to start server...
+Server running on port 8080
+Connection established 
+Recieving request...
+GET /Assignment1.pdf HTTP/1.1
+Host: 10.0.2.15:8080
+User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:28.0) Gecko/20100101 Firefox/28.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate
+Connection: keep-alive
+Cache-Control: max-age=0
+Generating response ...
+Closing client socket.
+Attempting to start server...
+Server running on port 8080
+Connection established 
+Recieving request...
+GET /Assignment1.pdf HTTP/1.1
+Host: 10.0.2.15:8080
+User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:28.0) Gecko/20100101 Firefox/28.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate
+Connection: keep-alive
+Cache-Control: max-age=0
+Generating response ...
+Closing client socket.
+Attempting to start server...
+Server running on port 8080
+Connection established 
+Recieving request...
+GET /kitten.jpg HTTP/1.1
+Host: 10.0.2.15:8080
+User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:28.0) Gecko/20100101 Firefox/28.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate
+Connection: keep-alive
+Generating response ...
+File does not exist
+Closing client socket.
+Attempting to start server...
+Server running on port 8080
+Connection established 
+Recieving request...
+GET /kitten.jpg HTTP/1.1
+Host: 10.0.2.15:8080
+User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:28.0) Gecko/20100101 Firefox/28.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate
+Connection: keep-alive
+Cache-Control: max-age=0
+Generating response ...
+~/Documents/kitten.jpg
+File does not exist
+Closing client socket.
+                                                          Attempting to start server...
+Server running on port 8080
+Connection established 
+Recieving request...
+GET /kitten.jpg HTTP/1.1
+Host: 10.0.2.15:8080
+User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:28.0) Gecko/20100101 Firefox/28.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate
+Connection: keep-alive
+Generating response ...
+~/home/cis455/Documents/kitten.jpg
+File does not exist
+Closing client socket.
+Connection established 
+Recieving request...
+GET /favicon.ico HTTP/1.1
+Host: 10.0.2.15:8080
+User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:28.0) Gecko/20100101 Firefox/28.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate
+Connection: keep-alive
+Generating response ...
+~/home/cis455/Documents/favicon.ico
+File does not exist
+Closing client socket.
+Attempting to start server...
+Attempting to start server...
+Server running on port 8080
+Connection established 
+Recieving request...
+GET /kitten.jpg HTTP/1.1
+Host: 10.0.2.15:8080
+User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:28.0) Gecko/20100101 Firefox/28.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate
+Connection: keep-alive
+Cache-Control: max-age=0
+Generating response ...
+~/home/cis455/Documents/kitten.jpg
+File does not exist
+Closing client socket.
+Attempting to start server...
+Server running on port 8080
+Connection established 
+Recieving request...
+GET /kitten.jpg HTTP/1.1
+Host: 10.0.2.15:8080
+User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:28.0) Gecko/20100101 Firefox/28.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate
+Connection: keep-alive
+Cache-Control: max-age=0
+Generating response ...
+/
+File exists
+Closing client socket.
+Attempting to start server...
+Server running on port 8080
+Connection established 
+Recieving request...
+GET /kitten.jpg HTTP/1.1
+Host: 10.0.2.15:8080
+User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:28.0) Gecko/20100101 Firefox/28.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate
+Connection: keep-alive
+Cache-Control: max-age=0
+Generating response ...
+/Documents
+File does not exist
+Closing client socket.
+Attempting to start server...
+Server running on port 8080
+Connection established 
+Recieving request...
+GET /kitten.jpg HTTP/1.1
+Host: 10.0.2.15:8080
+User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:28.0) Gecko/20100101 Firefox/28.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate
+Connection: keep-alive
+Cache-Control: max-age=0
+Generating response ...
+/
+File exists
+Closing client socket.
+Connection established 
+Recieving request...
+GET /kitten.jpg HTTP/1.1
+Host: 10.0.2.15:8080
+User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:28.0) Gecko/20100101 Firefox/28.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate
+Connection: keep-alive
+Cache-Control: max-age=0
+Generating response ...
+/
+File exists
+Closing client socket.
+Connection established 
+Recieving request...
+GET / HTTP/1.1
+Host: 10.0.2.15:8080
+User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:28.0) Gecko/20100101 Firefox/28.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate
+Connection: keep-alive
+Generating response ...
+/
+File exists
+Closing client socket.
+Attempting to start server...
+Server running on port 8080
+Connection established 
+Recieving request...
+GET / HTTP/1.1
+Host: 10.0.2.15:8080
+User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:28.0) Gecko/20100101 Firefox/28.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate
+Connection: keep-alive
+Cache-Control: max-age=0
+Generating response ...
+/
+File exists
+Attempting to start server...
+Server running on port 8080
+Connection established 
+Recieving request...
+GET / HTTP/1.1
+Host: 10.0.2.15:8080
+User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:28.0) Gecko/20100101 Firefox/28.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate
+Connection: keep-alive
+Cache-Control: max-age=0
+Generating response ...
+/
+File exists
+Closing client socket.
+Attempting to start server...
+Server running on port 8080
+Connection established 
+Recieving request...
+GET / HTTP/1.1
+Host: 10.0.2.15:8080
+User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:28.0) Gecko/20100101 Firefox/28.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate
+Connection: keep-alive
+Cache-Control: max-age=0
+Generating response ...
+/home/cis455
+File exists
+Closing client socket.
+Attempting to start server...
+Server running on port 8080
+Connection established 
+Recieving request...
+GET / HTTP/1.1
+Host: 10.0.2.15:8080
+User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:28.0) Gecko/20100101 Firefox/28.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate
+Connection: keep-alive
+Cache-Control: max-age=0
+Generating response ...
+/home/cis455/Downloads/
+File exists
+Closing client socket.
+Attempting to start server...
+Server running on port 8080
+Connection established 
+Recieving request...
+GET / HTTP/1.1
+Host: 10.0.2.15:8080
+User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:28.0) Gecko/20100101 Firefox/28.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate
+Connection: keep-alive
+Cache-Control: max-age=0
+Generating response ...
+/home/cis455/Documents/
+File exists
+Closing client socket.
+Connection established 
+Recieving request...
+GET /kitten.jpg HTTP/1.1
+Host: 10.0.2.15:8080
+User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:28.0) Gecko/20100101 Firefox/28.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate
+Connection: keep-alive
+Generating response ...
+/home/cis455/Documents/kitten.jpg
+File exists
+Sending file at path /home/cis455/Documents/kitten.jpg
+Closing client socket.
+Connection established 
+Recieving request...
+GET /Assignment1.pdf HTTP/1.1
+Host: 10.0.2.15:8080
+User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:28.0) Gecko/20100101 Firefox/28.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate
+Connection: keep-alive
+Generating response ...
+/home/cis455/Documents/Assignment1.pdf
+File exists
+Sending file at path /home/cis455/Documents/Assignment1.pdf
+Closing client socket.
