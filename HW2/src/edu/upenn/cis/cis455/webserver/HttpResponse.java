@@ -4,6 +4,7 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.Socket;
 
 import org.apache.log4j.Logger;
 
@@ -11,6 +12,7 @@ public class HttpResponse {
 	
 	static final Logger logger = Logger.getLogger(HttpResponse.class);	
 	
+	private Socket client;
 	private DataOutputStream out;
 	private String path;
 	
@@ -20,35 +22,32 @@ public class HttpResponse {
 	final static String OK = "HTTP/1.1 200 OK" + "\r\n";
 	final static String FileNotFound = "HTTP/1.1 404 Not Found" + "\r\n";
 	
-	public HttpResponse(DataOutputStream out) {
-		this.out = out;
+	public HttpResponse(HttpRequest req, String root) throws IOException {
+		logger.info("Generating response ...");
+		// Generate output stream
+		this.client = req.getClient();
+		this.out = new DataOutputStream(client.getOutputStream());
+		
+		// Search for file and handle appropriately
+		this.path = root + req.getPath();
+		File f = new File(path);
+		
+		if (f.exists()) {
+			logger.info("File or directory found");
+			out.writeBytes(OK);
+			out.writeBytes("\r\n");
+			if (f.isFile()) sendFile();
+			else if (f.isDirectory()) sendDirectory(f.list());
+		} else {
+			logger.info("File or directory not found");
+			out.writeBytes(FileNotFound);
+		}
+		
+		// Close all streams
+		close();
 	}	
 	
-	public void createResponse(String path){
-		logger.info("Generating response ...");
-		this.path = path;
-		File f = new File(path);
-		if (f.exists()) {
-			logger.info("File exists");
-			try {
-				out.writeBytes(OK);
-				out.writeBytes("\r\n");
-				if (f.isFile()) sendFile();
-				else if (f.isDirectory()) sendDirectory(f.list());
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		} else {
-			logger.info("File does not exist");
-			try {
-				out.writeBytes(FileNotFound);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-	}
-	
-	public void sendFile() throws IOException {
+	private void sendFile() throws IOException {
 		logger.info(String.format("Sending file at path %s", path));
 		FileInputStream fins = new FileInputStream(path);
 		byte[] buffer = new byte[1024];
@@ -60,20 +59,27 @@ public class HttpResponse {
 		}			
 		
 		fins.close();
-		out.close();
 	}
 	
-	public void sendDirectory(String contents[]) throws IOException {
+	private void sendDirectory(String contents[]) throws IOException {
+		logger.info(String.format("Sending directory at path %s", path));
+		
 		out.writeBytes(htmlStart);
 		out.writeBytes(String.format("Directory at: %s", path));
 		out.writeBytes("<ul>");
+		
 		for (int i = 0; i < contents.length; i++) {
 			out.writeBytes("<li>");
 			out.writeBytes(contents[i] + "\r\n");
 			out.writeBytes("</li>");
 		}
+		
 		out.writeBytes("</ul>");
 		out.writeBytes(htmlEnd);
+	}
+	
+	private void close() throws IOException {
 		out.close();
+		client.close();
 	}
 }

@@ -1,24 +1,47 @@
-package edu.upenn.cis.cis455.webserver;
+																																								package edu.upenn.cis.cis455.webserver;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.Socket;
 import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 import org.omg.CORBA.Request;
 
 public class HttpRequest {
-	
-	static final Logger logger = Logger.getLogger(HttpRequest.class);	
+		
+	private Socket client;
 	
 	private String method;
 	private String path;
 	private String version;
+	
 	private boolean statusDigested = false;
 	
 	private ArrayList<Header> headers = new ArrayList<Header>();
 	
-	private String body;
+	static final Logger logger = Logger.getLogger(HttpRequest.class);
 	
-	public HttpRequest() {}
+	public HttpRequest(Socket client) throws IOException {
+		
+		this.client = client;
+		BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
+		
+		String line;
+		
+		while ((line = in.readLine()) != null) {
+			// Build Request
+			if (!statusDigested) {
+				parseStatusLine(line);
+				statusDigested = true;
+			} else if (!line.isEmpty()){
+				parseHeader(line);
+			} else {
+				break;
+			}
+		}
+	}
 	
 	private class Header {
 		private String name;
@@ -34,7 +57,7 @@ public class HttpRequest {
 		}
 	}
 	
-	public void parseStatusLine(String statusLine) {
+	private void parseStatusLine(String statusLine) {
 		logger.info("Recieving request...");
 		logger.info(statusLine);
 		
@@ -54,7 +77,7 @@ public class HttpRequest {
 		statusDigested = true;
 	}
 	
-	public void parseHeader(String header){
+	private void parseHeader(String header){
 		logger.info(header);
 		String components[] = header.split(":");
 		
@@ -65,8 +88,7 @@ public class HttpRequest {
 		}
 	}
 	
-	public boolean statusDigested() { return statusDigested; }
-	
+	public Socket getClient() { return client; }
 	public String getPath() { return path; }
 	public String getMethod() { return method; }
 	public String getVersion() { return version; }

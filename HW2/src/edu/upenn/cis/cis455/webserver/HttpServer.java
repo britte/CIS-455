@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Vector;
 
 import org.apache.log4j.Logger;
 
@@ -33,38 +34,24 @@ public class HttpServer {
 					server = new ServerSocket(port);
 					logger.info(String.format("Server running on port %d", port));
 					
-					while (true) {
-						Socket client = server.accept();
-						logger.info("Connection established ");
-						
-						BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
-						DataOutputStream out = new DataOutputStream(client.getOutputStream());
-						
-						String line;
-						HttpRequest req = new HttpRequest();
-						HttpResponse res = new HttpResponse(out);
-						
-						while ((line = in.readLine()) != null) {
-							// Build Request
-							if (!req.statusDigested()) {
-								req.parseStatusLine(line);
-							} else if (!line.isEmpty()){
-								req.parseHeader(line);
-							} else {
-								res.createResponse(root + req.getPath());
-								break;
-							}
-						}
-						
-						logger.info("Closing client socket.");
-						client.close();
-					}
+					// Create a request queue 
+					Vector<HttpRequest> reqQ = new Vector<HttpRequest>();
+					int capacity = 5;
+					
+					// Create a RequestThread to listen for server requests
+					RequestThread reqThread = new RequestThread(reqQ, capacity, server);
+					// Create a thread pool of ResponseThreads to respond to requests
+					ResponseThread resThread = new ResponseThread(reqQ, root);
+					
+					reqThread.start();
+					resThread.start();
 					
 				} catch (NumberFormatException e) {
 					throw new IllegalArgumentException("Port must be valid integer");
 				} catch (IllegalArgumentException e) {
 					throw new IllegalArgumentException("Port must be in bounds (0-65535 inclusive)");
 				}
+				break;
 			default:
 				throw new IllegalArgumentException("Expected arguments: [port] [root directory]");
 		}
