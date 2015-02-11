@@ -24,8 +24,7 @@ public class HttpServer {
 				
 				try {
 					port = Integer.parseInt(args[0]);
-//					root = args[1];
-					root = "/home/cis455/Documents";
+					root = args[1];
 					server = new ServerSocket(port);
 					logger.info(String.format("Server running on port %d", port));
 					
@@ -49,6 +48,10 @@ public class HttpServer {
 					}
 					
 					pool.start();
+					
+					while (pool.running){}
+					
+					System.exit(0);
 					
 				} catch (NumberFormatException e) {
 					throw new IllegalArgumentException("Port must be valid integer");

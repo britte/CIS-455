@@ -7,10 +7,9 @@ import org.apache.log4j.Logger;
 
 public class ResponseThread extends PoolThread {
 	
-	private ThreadPool pool;
-	
 	private Vector<HttpRequest> q;
 	private String root;
+	private HttpRequest req;
 	
 	static final Logger logger = Logger.getLogger(RequestThread.class);	
 	
@@ -41,19 +40,23 @@ public class ResponseThread extends PoolThread {
 	}
 	
 	public void run() {
-		while(!stopped) {
+		while(pool.running) {
 			try {
-				HttpRequest req = readFromQueue();
+				this.req = readFromQueue();
 				logger.info(String.format("%s consumed %s from shared queue", this.getName(), req));
-				
 				HttpResponse res = new HttpResponse(req, root, pool);
-				
-				Thread.sleep(100); // why?
+				this.req = null;
 			} catch (InterruptedException ex) {
 				logger.error("Interrupt Exception in Response Thread");
 			} catch (IOException e) {
 				logger.error("Error responding to client");
 			}
 		}
+		interrupt();
+		logger.info(String.format("%s shutting down", this.getName()));
+	}
+	
+	public String getStatus() {
+		return this.getState().toString() + " " + (this.req != null ? this.req.getPath() : "");
 	}
 }

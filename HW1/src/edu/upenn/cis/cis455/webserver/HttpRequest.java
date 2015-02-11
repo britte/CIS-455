@@ -5,9 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 import java.util.ArrayList;
-
 import org.apache.log4j.Logger;
-import org.omg.CORBA.Request;
 
 public class HttpRequest {
 		
@@ -40,6 +38,7 @@ public class HttpRequest {
 			} else {
 				break;
 			}
+			// TODO: body parsing
 		}
 	}
 	

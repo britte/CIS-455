@@ -4,7 +4,6 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.lang.Thread.State;
 import java.net.Socket;
 
 import org.apache.log4j.Logger;
@@ -23,10 +22,15 @@ public class HttpResponse {
 	
 	final static String OK = "HTTP/1.1 200 OK\r\n";
 	final static String FileNotFound = "HTTP/1.1 404 Not Found\r\n";
-	final static String ConnClose = "Connection: close\r\n";
+	
+	final static String ServerHeader = "server: HttpServer/1.0";
+	final static String LastModifiedHeader = "Last-Modified: Tue, 11 Feb 2015 2:37:00 GMT"; 
+	final static String ConnCloseHeader = "Connection: close\r\n";
 	
 	public HttpResponse(HttpRequest req, String root, ThreadPool pool) throws IOException {
 		logger.info("Generating response ...");
+		
+		this.pool = pool;
 		
 		// Generate output stream
 		this.client = req.getClient();
@@ -36,9 +40,11 @@ public class HttpResponse {
 		
 		switch (path) {
 			case "/control": 
+				okResponseHead();
 				controlResponse();
 				break;
 			case "/shutdown":
+				okResponseHead();
 				shutdownResponse();
 				break;
 			default:
@@ -46,36 +52,28 @@ public class HttpResponse {
 				pathResponse();	
 		}
 		
-		
 		// Close all streams
 		close();
 	}	
 	
-	public void setPool(ThreadPool pool) {
-		this.pool = pool;
-	}
-	
 	/*
-	 * Search for file or directory and handle appropriately
+	 * Search for file or directory and delegate parsing appropriately
 	 */
 	private void pathResponse() throws IOException {
 		File f = new File(path);
 		
 		if (f.exists()) {
-			logger.info("File or directory found");
-			out.writeBytes(OK);
-			out.writeBytes(ConnClose);
-			out.writeBytes("\r\n");
+			okResponseHead();
 			if (f.isFile()) sendFile();
 			else if (f.isDirectory()) sendDirectory(f.list());
 		} else {
-			logger.info("File or directory not found");
-			out.writeBytes(FileNotFound);
-			out.writeBytes(ConnClose);
-			out.writeBytes("\r\n");
+			notFoundResponseHead();
 		}
 	}
 	
+	/*
+	 * Generate file response
+	 */
 	private void sendFile() throws IOException {
 		logger.info(String.format("Sending file at path %s", path));
 		FileInputStream fins = new FileInputStream(path);
@@ -90,6 +88,9 @@ public class HttpResponse {
 		fins.close();
 	}
 	
+	/*
+	 * Generate directory response
+	 */
 	private void sendDirectory(String contents[]) throws IOException {
 		logger.info(String.format("Sending directory at path %s", path));
 		
@@ -103,33 +104,63 @@ public class HttpResponse {
 		out.writeBytes(htmlEnd);
 	}
 	
-	private void shutdownResponse() {
+	/*
+	 * Generate shutdown response and shutdown pool
+	 */
+	private void shutdownResponse() throws IOException {
+		logger.info("Begining shutdown...");
+		
+		out.writeBytes(htmlStart);
+		out.writeBytes("Server successfully shut down.");
+		out.writeBytes(htmlEnd);
+		
+		pool.shutdown();
 	}
 	
 	private void controlResponse() throws IOException {
 		out.writeBytes(htmlStart);
-		// Name and SEAS login
-		out.writeBytes("Elizabeth Britton: britte");
+		
+		// Page header
+		out.writeBytes("<h1>Control Page</h1>");
+		out.writeBytes("Elizabeth Britton: britte <br/>");
+		
 		// Thread pool status
 		out.writeBytes("<ul>");
-		for (Thread t : pool.getThreads()) {
-//			switch (t.getState()) {
-//				case BLOCKED: break;
-//				case WAITING: break;
-//				case NEW: break;
-//				case TIMED_WAITING: break;
-//				case TERMINATED: break;
-//				case RUNNABLE: break;
-//				default: break;
-//			}
-			out.writeBytes(String.format("<li>%s: %s</li>", t.getName(), t.getState()));
+		for (PoolThread t : pool.getThreads()) {
+			out.writeBytes(String.format("<li>%s: %s</li>", t.getName(), t.getStatus()));
 		}
-		out.writeBytes("</ul>");
+		out.writeBytes("</ul><br/>");
+		
+		// Shutdown button
+		out.writeBytes("<a href='/shutdown'>Shutdown</a>");
+		
 		out.writeBytes(htmlEnd);
 	}
 	
 	private void close() throws IOException {
 		out.close();
 		client.close();
+	}
+	
+	/*
+	 * Helpers to print status and header lines 
+	 */
+	
+	private void okResponseHead() throws IOException {
+		out.writeBytes(OK);
+		out.writeBytes(ServerHeader);
+		out.writeBytes(LastModifiedHeader);
+		out.writeBytes(ConnCloseHeader);
+		out.writeBytes("\r\n");
+	}
+	
+	private void notFoundResponseHead() throws IOException {
+		logger.info(String.format("File not found at path %s", path));
+		
+		out.writeBytes(FileNotFound);
+		out.writeBytes(ServerHeader);
+		out.writeBytes(LastModifiedHeader);
+		out.writeBytes(ConnCloseHeader);
+		out.writeBytes("\r\n");
 	}
 }

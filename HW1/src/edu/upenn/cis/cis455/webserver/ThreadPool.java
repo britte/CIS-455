@@ -3,13 +3,11 @@ package edu.upenn.cis.cis455.webserver;
 import java.util.ArrayList;
 import java.util.Vector;
 
-import java.net.ServerSocket;
-
 public class ThreadPool {
 	
 	private Vector<HttpRequest> q = new Vector<HttpRequest>();
 	private ArrayList<PoolThread> threads = new ArrayList<PoolThread>();
-	private boolean running = true;
+	protected boolean running = true;
 
 	public ThreadPool() {};
 	
@@ -30,8 +28,5 @@ public class ThreadPool {
 	
 	public void shutdown() {
 		this.running = false;
-		for(PoolThread thread : threads) {
-			thread.shutdown();
-		}
 	};
 }
