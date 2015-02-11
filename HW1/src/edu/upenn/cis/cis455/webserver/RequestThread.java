@@ -14,10 +14,10 @@ import org.apache.log4j.Logger;
  * Class for Consumer thread.
  */
 
-public class RequestThread extends Thread {
+public class RequestThread extends PoolThread {
 
 	static final Logger logger = Logger.getLogger(RequestThread.class);	
-
+	
 	private final Vector<HttpRequest> q;
 	private final int capacity;
 	private ServerSocket server;
@@ -28,7 +28,7 @@ public class RequestThread extends Thread {
 		this.capacity = capacity;
 		this.server = server;
 	}
-
+	
 	/**
 	 * Method which pushes a parsed request onto the shared queue.
 	 * @param i - item to be added

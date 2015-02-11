@@ -1,12 +1,7 @@
 package edu.upenn.cis.cis455.webserver;
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.net.ServerSocket;
-import java.net.Socket;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
@@ -45,6 +40,7 @@ public class HttpServer {
 					for (int i = 0; i < requestThreads; i++) {
 						// Create a RequestThread to listen for server requests
 						pool.addThread(new RequestThread(reqQ, capacity, server));
+						
 					}
 					
 					for (int i = 0; i < responseThreads; i++) {

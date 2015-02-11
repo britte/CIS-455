@@ -13,7 +13,7 @@ public class HttpResponse {
 	
 	static final Logger logger = Logger.getLogger(HttpResponse.class);	
 	
-	private ResponseThread thread;
+	private ThreadPool pool;
 	private Socket client;
 	private DataOutputStream out;
 	private String path;
@@ -25,11 +25,10 @@ public class HttpResponse {
 	final static String FileNotFound = "HTTP/1.1 404 Not Found\r\n";
 	final static String ConnClose = "Connection: close\r\n";
 	
-	public HttpResponse(HttpRequest req, String root) throws IOException {
+	public HttpResponse(HttpRequest req, String root, ThreadPool pool) throws IOException {
 		logger.info("Generating response ...");
 		
 		// Generate output stream
-		this.thread = thread;
 		this.client = req.getClient();
 		this.out = new DataOutputStream(client.getOutputStream());
 		
@@ -44,14 +43,17 @@ public class HttpResponse {
 				break;
 			default:
 				this.path = root + this.path;
-				pathResponse();
-				
+				pathResponse();	
 		}
 		
 		
 		// Close all streams
 		close();
 	}	
+	
+	public void setPool(ThreadPool pool) {
+		this.pool = pool;
+	}
 	
 	/*
 	 * Search for file or directory and handle appropriately
@@ -101,27 +103,26 @@ public class HttpResponse {
 		out.writeBytes(htmlEnd);
 	}
 	
-	private void controlResponse() {
-		
+	private void shutdownResponse() {
 	}
 	
-	private void shutdownResponse() throws IOException {
+	private void controlResponse() throws IOException {
 		out.writeBytes(htmlStart);
 		// Name and SEAS login
 		out.writeBytes("Elizabeth Britton: britte");
 		// Thread pool status
 		out.writeBytes("<ul>");
-//		for (int i = 0; i < threads.length(); i++) {
-//			
-//		}
-		switch (thread.getState()) {
-			case BLOCKED: break;
-			case WAITING: break;
-			case NEW: break;
-			case TIMED_WAITING: break;
-			case TERMINATED: break;
-			case RUNNABLE: break;
-			default: break;
+		for (Thread t : pool.getThreads()) {
+//			switch (t.getState()) {
+//				case BLOCKED: break;
+//				case WAITING: break;
+//				case NEW: break;
+//				case TIMED_WAITING: break;
+//				case TERMINATED: break;
+//				case RUNNABLE: break;
+//				default: break;
+//			}
+			out.writeBytes(String.format("<li>%s: %s</li>", t.getName(), t.getState()));
 		}
 		out.writeBytes("</ul>");
 		out.writeBytes(htmlEnd);

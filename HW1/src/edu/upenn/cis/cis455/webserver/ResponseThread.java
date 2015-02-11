@@ -2,9 +2,12 @@ package edu.upenn.cis.cis455.webserver;
 
 import java.io.IOException;
 import java.util.Vector;
+
 import org.apache.log4j.Logger;
 
-public class ResponseThread extends Thread {
+public class ResponseThread extends PoolThread {
+	
+	private ThreadPool pool;
 	
 	private Vector<HttpRequest> q;
 	private String root;
@@ -38,12 +41,12 @@ public class ResponseThread extends Thread {
 	}
 	
 	public void run() {
-		while(true) {
+		while(!stopped) {
 			try {
 				HttpRequest req = readFromQueue();
 				logger.info(String.format("%s consumed %s from shared queue", this.getName(), req));
 				
-				HttpResponse res = new HttpResponse(req, root);
+				HttpResponse res = new HttpResponse(req, root, pool);
 				
 				Thread.sleep(100); // why?
 			} catch (InterruptedException ex) {
