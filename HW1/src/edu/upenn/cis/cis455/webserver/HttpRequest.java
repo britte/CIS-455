@@ -5,19 +5,26 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
+
 import org.apache.log4j.Logger;
 
 public class HttpRequest {
-		
+	
 	private Socket client;
 	
+	// Parse method components
 	private String method;
 	private String path;
 	private String version;
 	
-	private boolean statusDigested = false;
+	private HashMap<String, String> headers = new HashMap<String, String>();
+	private String lastHeader = "";
+	private boolean hasHost = false;
+	private boolean ifMod = false;
+	private boolean ifUnmod = false;
 	
-	private ArrayList<Header> headers = new ArrayList<Header>();
+	private StringBuilder body;
 	
 	static final Logger logger = Logger.getLogger(HttpRequest.class);
 	
@@ -25,34 +32,23 @@ public class HttpRequest {
 		
 		this.client = client;
 		BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
-		
 		String line;
 		
+		// Build Request
+		boolean statusDigested = false;
+		boolean startBody = false;
+		
 		while ((line = in.readLine()) != null) {
-			// Build Request
 			if (!statusDigested) {
 				parseStatusLine(line);
 				statusDigested = true;
 			} else if (!line.isEmpty()){
+//				if (startBody) parseBody(line);
 				parseHeader(line);
-			} else {
+			} else if (line.isEmpty()){
+//				if (!startBody) startBody = true;
 				break;
 			}
-			// TODO: body parsing
-		}
-	}
-	
-	private class Header {
-		private String name;
-		private String value;
-		
-		public Header(String name, String value) {
-			this.name = name;
-			this.value = value.trim();
-		}
-		
-		public void addValue(String value) {
-			this.value.concat(value);
 		}
 	}
 	
@@ -75,18 +71,32 @@ public class HttpRequest {
 		
 		path = request[1];
 		version = request[2];
-		statusDigested = true;
 	}
 	
-	private void parseHeader(String header){
+	private void parseHeader(String header) {
 //		logger.info(header);
 		String components[] = header.split(":");
 		
 		if (components.length > 1) {
-			headers.add(new Header(components[0], components[1]));
+			headers.put(components[0], components[1].trim());
+			lastHeader = components[0];
+			headerCheck(components[0]);
 		} else {
-			headers.get(headers.size() - 1).addValue(components[0]);
+			String values = headers.get(lastHeader);
+			headers.put(components[0], values + "," + components[1].trim());
 		}
+	}
+	
+	private void headerCheck(String h) {
+		switch (h) {
+			case "Host": this.hasHost = true;
+			case "If-Modified-Since": this.ifMod  = true;
+			case "If-Unmodified-Since": this.ifUnmod = true;
+		}
+	}
+	
+	private void parseBody(String body) {
+		this.body.append(body);
 	}
 	
 	public Socket getClient() { return client; }
@@ -94,4 +104,7 @@ public class HttpRequest {
 	public String getMethod() { return method; }
 	public String getVersion() { return version; }
 	
+	public boolean hostComplient() { return (!version.equals("1.1") || hasHost); }
+	public String ifMod() { return (ifMod ? headers.get("If-Modified-Since") : null); }
+	public String ifUnmod() { return (ifUnmod ? headers.get("If-Unmodified-Since") : null); }
 }

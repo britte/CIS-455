@@ -38,7 +38,7 @@ public class HttpServer {
 					
 					for (int i = 0; i < requestThreads; i++) {
 						// Create a RequestThread to listen for server requests
-						pool.addThread(new RequestThread(reqQ, capacity, server));
+						pool.addThread(new RequestThread(reqQ, capacity, server, root));
 						
 					}
 					
