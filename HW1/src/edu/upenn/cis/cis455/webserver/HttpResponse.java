@@ -53,10 +53,7 @@ public class HttpResponse {
 		this.req = req;
 		this.path = req.getPath();
 		
-		if (!req.getMethod().equals("GET") && !req.getMethod().equals("HEAD")) {
-			notImplementedResponse();
-			return;
-		}
+		String method = req.getMethod();
 		
 		this.get = req.getMethod().equals("GET");
 		
