@@ -100,3 +100,246 @@ Looking for servlet conf/web.xml
 Attempting to start servlet...
 Looking for servlet conf/web.xml
 HelloWorld
+Attempting to start servlet...
+Looking for servlet conf/web.xml
+Attempting to start servlet...
+Looking for servlet conf/web.xml
+Attempting to start servlet...
+Looking for servlet conf/web.xml
+Attempting to start servlet...
+Looking for servlet conf/web.xml
+Attempting to start servlet...
+Looking for servlet conf/web.xml
+Attempting to start servlet...
+Looking for servlet conf/web.xml
+58
+	
+58
+		
+59HelloWorld
+58
+		
+60edu.upenn.HelloWorld
+58
+		
+62
+			
+98greeting
+98
+			
+99Bonjour!
+58
+		
+58
+	
+58
+	
+58
+		
+59HelloWorld
+58
+		
+58/Hello
+58
+	
+58
+	
+61
+	    
+88server
+88
+		
+89my455server
+58
+	
+58
+
+Attempting to start servlet...
+Looking for servlet conf/web.xml
+58
+	
+58
+		
+59HelloWorld
+58
+		
+60edu.upenn.HelloWorld
+58
+		
+62
+			
+78greeting
+78
+			
+79Bonjour!
+58
+		
+58
+	
+58
+	
+58
+		
+59HelloWorld
+58
+		
+58/Hello
+58
+	
+58
+	
+61
+	    
+68server
+68
+		
+69my455server
+58
+	
+58
+
+Attempting to start servlet...
+Looking for servlet conf/web.xml
+58
+	
+58
+		
+59HelloWorld
+58
+		
+60edu.upenn.HelloWorld
+Attempting to start servlet...
+Looking for servlet conf/web.xml
+Attempting to start servlet...
+Looking for servlet conf/web.xml
+Attempting to start servlet...
+Looking for servlet conf/web.xml
+Attempting to start servlet...
+Looking for servlet conf/web.xml
+Attempting to start servlet...
+Looking for servlet conf/web.xml
+Attempting to start servlet...
+Looking for servlet conf/web.xml
+Attempting to start servlet...
+Looking for servlet conf/web.xml
+Attempting to start servlet...
+Looking for servlet conf/web.xml
+Attempting to start servlet...
+Looking for servlet conf/web.xml
+Attempting to start servlet...
+Looking for servlet conf/web.xml
+Attempting to start servlet...
+Looking for servlet conf/web.xml
+Set paramName: greeting
+Set paramName: 
+			
+Set paramName: server
+Set paramName: 
+		
+Putting param: 
+		,my455server
+Attempting to start servlet...
+Looking for servlet conf/web.xml
+Found paramName: param-name
+Set paramName: greeting
+Set paramName: 
+			
+Found paramName: param-name
+Set paramName: server
+Set paramName: 
+		
+Putting param: 
+		,my455server
+Attempting to start servlet...
+Looking for servlet conf/web.xml
+Putting param: server,my455server
+Attempting to start servlet...
+Looking for servlet conf/web.xml
+Attempting to start servlet...
+Looking for servlet conf/web.xml
+Attempting to start servlet...
+Looking for servlet conf/web.xml
+Attempting to start servlet...
+Looking for servlet conf/web.xml
+Attempting to start servlet...
+Looking for servlet conf/web.xml
+Attempting to start servlet...
+Looking for servlet conf/web.xml
+Attempting to start servlet...
+Looking for servlet conf/web.xml
+Attempting to start servlet...
+Looking for servlet conf/web.xml
+Attempting to start servlet...
+Looking for servlet conf/web.xml
+Attempting to start servlet...
+Looking for servlet conf/web.xml
+Attempting to start servlet...
+Looking for servlet conf/web.xml
+Attempting to start servlet...
+Looking for servlet conf/web.xml
+Attempting to start servlet...
+Looking for servlet conf/web.xml
+web-app
+servlet
+servlet-name
+servlet-class
+init-param
+param-name
+param-value
+servlet-mapping
+servlet-name
+url-pattern
+Attempting to start servlet...
+Looking for servlet conf/web.xml
+web-app
+servlet
+servlet-name
+servlet-class
+init-param
+param-name
+param-value
+servlet-mapping
+servlet-name
+url-pattern
+Attempting to start servlet...
+Looking for servlet conf/web.xml
+web-app
+servlet
+servlet-name
+servlet-class
+init-param
+param-name
+param-value
+servlet-mapping
+servlet-name
+url-pattern
+Attempting to start servlet...
+Looking for servlet conf/web.xml
+web-app
+Attempting to start servlet...
+Looking for servlet conf/web.xml
+web-app
+servlet
+servlet-name
+servlet-class
+init-param
+param-name
+param-value
+servlet-mapping
+servlet-name
+url-pattern
+Attempting to start servlet...
+Looking for servlet conf/web.xml
+web-app
+servlet
+servlet-name
+servlet-class
+init-param
+param-name
+param-value
+servlet-mapping
+servlet-name
+url-pattern
+context-param
+param-name
+param-value
