@@ -3,9 +3,11 @@ package edu.upenn.cis.cis455.webserver;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.ArrayList;
+import java.util.Set;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
+import org.w3c.dom.Document;
 
 import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader.Array;
 
@@ -16,7 +18,7 @@ public class HttpServer {
 	private static ServerSocket server;
 	private static int port;
 	private static String root;
-	private static String servlet;
+	private static String servletPath;
 	private static ArrayList<String> options;
 
 	public static void run() throws IOException {
@@ -50,7 +52,7 @@ public class HttpServer {
 		System.exit(0);
 	}
 	
-	public static void main(String args[]) throws IOException {
+	public static void main(String args[]) throws Exception {
 		switch (args.length) {
 			case 0: 
 				System.out.println("Elizabeth Britton: britte");
@@ -74,8 +76,15 @@ public class HttpServer {
 				try {
 					port = Integer.parseInt(args[0]);
 					root = args[1];
-					servlet = args[2];
-					run();
+					servletPath = args[2];
+					
+					logger.info("Looking for servlet " + servletPath);
+					XmlParser parser = new XmlParser(servletPath);
+					parser.readFile();
+					
+					myServletConfig config = parser.getServletConfig();
+					
+//					run();
 				} catch (NumberFormatException e) {
 					throw new IllegalArgumentException("Port must be valid integer");
 				}
@@ -84,7 +93,7 @@ public class HttpServer {
 				try {
 					port = Integer.parseInt(args[0]);
 					root = args[1];
-					servlet = args[2];
+					servletPath = args[2];
 					options = new ArrayList<String>();
 					for (int i = 3; i < args.length; i++) {
 						options.add(args[i]);

@@ -4,6 +4,7 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Set;
 
 import javax.servlet.RequestDispatcher;
@@ -13,16 +14,23 @@ import javax.servlet.ServletException;
 
 public class myServletContext implements ServletContext {
 
+	private HashMap<String, Object> attributes;
+	private HashMap<String, String> initParams;
+	
+	public myServletContext(HashMap<String,String> initParams) {
+		this.attributes = new HashMap<String, Object>();
+		this.initParams = initParams;
+	}
+	
+	
 	@Override
-	public Object getAttribute(String arg0) {
-		// TODO Auto-generated method stub
-		return null;
+	public Object getAttribute(String attr) {
+		return attributes.get(attr);
 	}
 
 	@Override
 	public Enumeration getAttributeNames() {
-		// TODO Auto-generated method stub
-		return null;
+		return new HashEnum<String>(this.attributes.keySet().iterator());
 	}
 
 	@Override
@@ -32,37 +40,23 @@ public class myServletContext implements ServletContext {
 	}
 
 	@Override
-	public String getInitParameter(String arg0) {
-		// TODO Auto-generated method stub
-		return null;
+	public String getInitParameter(String param) {
+		return this.initParams.get(param);
 	}
 
 	@Override
 	public Enumeration getInitParameterNames() {
-		// TODO Auto-generated method stub
-		return null;
+		return new HashEnum<String>(this.initParams.keySet().iterator());
 	}
 
 	@Override
 	public int getMajorVersion() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public String getMimeType(String arg0) {
-		return null; // DO NOT IMPLEMENT
+		return 2; // Version 2.4 compliant
 	}
 
 	@Override
 	public int getMinorVersion() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public RequestDispatcher getNamedDispatcher(String arg0) {
-		return null; // DO NOT IMPLEMENT
+		return 4; // Version 2.4 compliant
 	}
 
 	@Override
@@ -71,6 +65,42 @@ public class myServletContext implements ServletContext {
 		return null;
 	}
 
+	@Override
+	public String getServerInfo() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public String getServletContextName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public void removeAttribute(String attr) {
+		this.attributes.remove(attr);
+	}
+
+	@Override
+	public void setAttribute(String attrName, Object attrVal) {
+		this.attributes.put(attrName, attrVal);
+	}
+
+	
+	//
+	// Deprecated or Do Not Implement Methods
+	//
+	@Override
+	public String getMimeType(String arg0) {
+		return null; // DO NOT IMPLEMENT
+	}
+
+	@Override
+	public RequestDispatcher getNamedDispatcher(String arg0) {
+		return null; // DO NOT IMPLEMENT
+	}
+	
 	@Override
 	public RequestDispatcher getRequestDispatcher(String arg0) {
 		return null; // DO NOT IMPLEMENT
@@ -90,22 +120,10 @@ public class myServletContext implements ServletContext {
 	public Set getResourcePaths(String arg0) {
 		return null; // DO NOT IMPLEMENT
 	}
-
-	@Override
-	public String getServerInfo() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
+	
 	@Override
 	public Servlet getServlet(String arg0) throws ServletException {
 		return null; // DEPRECATED
-	}
-
-	@Override
-	public String getServletContextName() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override
@@ -132,17 +150,4 @@ public class myServletContext implements ServletContext {
 	public void log(String arg0, Throwable arg1) {
 		// DO NOT IMPLEMENT
 	}
-
-	@Override
-	public void removeAttribute(String arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void setAttribute(String arg0, Object arg1) {
-		// TODO Auto-generated method stub
-		
-	}
-
 }
