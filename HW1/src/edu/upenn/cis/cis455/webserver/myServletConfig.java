@@ -33,7 +33,7 @@ public class myServletConfig implements ServletConfig {
 
 	@Override
 	public Enumeration<String> getInitParameterNames() {
-		return new HashEnum<String>(this.initParameters.keySet().iterator());
+		return new IterEnumeration<String>(this.initParameters.keySet().iterator());
 	}
 
 	@Override

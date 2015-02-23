@@ -2,12 +2,16 @@ package edu.upenn.cis.cis455.webserver;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.net.Socket;
+import java.net.URLDecoder;
 import java.security.Principal;
+import java.text.ParseException;
+import java.util.Date;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 
@@ -17,13 +21,30 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.log4j.Logger;
+
 public class myHttpServletRequest implements HttpServletRequest {
 
-	private String method; // TODO
-	private String path; // TODO
-	private String version; // TODO
+	private Socket client;
+	private BufferedReader in;
+	private Logger logger = Logger.getLogger(HttpRequest.class);
 	
-	private HashMap<String,ArrayList<String>> headers; // TODO
+	private String method; 
+	
+	private String reqPath; 
+	private String scheme = "http";
+	private String serverName; // TODO
+	private int serverPort = 80; 
+	private String contextPath = ""; 
+	private String servletPath; // TODO
+	private String pathInfo; // TODO
+	private String queryString; 
+	
+	private String version; 
+	
+	private HashMap<String,ArrayList<String>> headers; 
+	private String lastSeenHeader;
+	private StringBuilder body;
 	
 	private String characterEncoding = "ISO-8859-1";
 	private int contentLength; // TODO
@@ -33,6 +54,119 @@ public class myHttpServletRequest implements HttpServletRequest {
 	private HashMap<String,Object> attributes;
 	private HashMap<String,String[]> params;
 	private myHttpSession session;
+	
+	public myHttpServletRequest(Socket client, myHttpSession session) throws IOException {
+		this.client = client;
+		this.in = new BufferedReader(new InputStreamReader(client.getInputStream()));
+		this.session = session;
+		
+		// Build request
+		String line;
+		boolean statusDigested = false;
+		boolean startBody = false;
+		
+		while ((line = in.readLine()) != null) {
+			if (!statusDigested) {
+				parseStatusLine(line); // TODO throw 400 if bad
+				statusDigested = true;
+			} else if (!line.isEmpty()){
+				if (startBody) parseBody(line);
+				parseHeader(line); // TODO throw 400 if bad
+			} else if (line.isEmpty()){
+				if (!startBody) startBody = true;
+				else break;
+			}
+		}
+	}
+	
+	//
+	// Parser Methods
+	//
+	
+	private boolean parseStatusLine(String statusLine) {
+//		logger.info(statusLine);
+		
+		String request[] = statusLine.split(" ");
+		if (request.length != 3) {
+			logger.error("Invalid request: status line misformatted");
+			return false;
+		}
+		
+		this.method = request[0];
+		
+		// Check that header is a valid method
+		if (!(method.equals("GET") || method.equals("HEAD"))) {
+			logger.error("Invalid request: unsupported method");
+			return false;
+		}
+		
+		this.reqPath = request[1]; // TODO handle absolute path
+		this.version = request[2];
+		return true;
+	}
+	
+	private void parseHeader(String header) {
+//		logger.info(header);
+		String components[] = header.split(":");
+		
+		if (components.length > 1) { // line format = Header: value 
+			ArrayList<String> values = this.headers.get(components[0]);
+			if (values == null) values = new ArrayList<String>();
+			
+			values.add(components[1].trim());
+			this.headers.put(components[0], values);
+			
+			this.lastSeenHeader = components[0];
+			// headerCheck(components[0]);
+		} else { // line format = value (continued from last line with header)
+			ArrayList<String> values = headers.get(lastSeenHeader);
+			values.add(components[0].trim());
+			headers.put(lastSeenHeader, values);
+		}
+	}
+	
+	private void parseBody(String body) {
+		this.body.append(body);
+	}
+	
+	private boolean isAbsoluteUrl(String path) {
+		return path.indexOf("http://") != -1;
+	}
+	
+	private void parsePath(String path) {
+		String url = path;
+		// format: scheme://domain[:port]/path[?query][#fragment_id]
+		if (url.indexOf("#") != -1) {
+			url = url.split("#")[0];
+		} 
+		// format: scheme://domain[:port]/path[?query]
+		if (url.indexOf("?") != -1) {
+			String[] urlQuery = url.split("\\?");
+			url = urlQuery[0];
+			this.queryString = urlQuery[1];
+		}
+		// format: scheme://domain[:port]/path
+		if (url.indexOf("://") != -1) {
+			// We return a scheme of http by default
+			url = url.split("\\?")[1];
+		}
+		// format: domain[:port]/path
+		if (url.indexOf("/") != -1) {
+			String[] domainPath = url.split("/", 2);
+			url = domainPath[0];
+			this.pathInfo = domainPath[1]; // TODO: split out the servlet path
+		}
+		// format: domain[:port]
+		if (url.indexOf(":") != -1) {
+			String[] domainPort = url.split(":");
+			this.serverName = domainPort[0];
+			try {
+				this.serverPort = Integer.parseInt(domainPort[1]);
+			} catch (NumberFormatException e) {
+				// give an ill formated request response
+			}
+		}
+	}
 	
 	//
 	// ServletResponse Methods
@@ -45,7 +179,7 @@ public class myHttpServletRequest implements HttpServletRequest {
 
 	@Override
 	public Enumeration<String> getAttributeNames() {
-		return new HashEnum<String>(this.attributes.keySet().iterator());
+		return new IterEnumeration<String>(this.attributes.keySet().iterator());
 	}
 
 	@Override
@@ -65,20 +199,17 @@ public class myHttpServletRequest implements HttpServletRequest {
 
 	@Override
 	public String getLocalAddr() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.client.getLocalAddress().getHostAddress();
 	}
 
 	@Override
 	public String getLocalName() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.client.getLocalAddress().getHostName();
 	}
 
 	@Override
 	public int getLocalPort() {
-		// TODO Auto-generated method stub
-		return 0;
+		return this.client.getLocalPort();
 	}
 
 	@Override
@@ -99,7 +230,7 @@ public class myHttpServletRequest implements HttpServletRequest {
 
 	@Override
 	public Enumeration<String> getParameterNames() {
-		return new HashEnum<String>(this.params.keySet().iterator());
+		return new IterEnumeration<String>(this.params.keySet().iterator());
 	}
 
 	@Override
@@ -109,59 +240,47 @@ public class myHttpServletRequest implements HttpServletRequest {
 
 	@Override
 	public String getProtocol() {
-		return "HTTP/" + this.version; // ex: HTTP/1.1
+		return this.version; // HTTP/1.1
 	}
 
 	@Override
 	public BufferedReader getReader() throws IOException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String getRealPath(String arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.in;
 	}
 
 	@Override
 	public String getRemoteAddr() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.client.getInetAddress().getHostAddress();
 	}
 
 	@Override
 	public String getRemoteHost() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.client.getInetAddress().getHostName();
 	}
 
 	@Override
 	public int getRemotePort() {
-		// TODO Auto-generated method stub
-		return 0;
+		return this.client.getPort();
 	}
 
 	@Override
 	public String getScheme() {
-		return "http";
+		return this.scheme;
 	}
 
 	@Override
 	public String getServerName() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.serverName;
 	}
 
 	@Override
 	public int getServerPort() {
-		// TODO Auto-generated method stub
-		return 0;
+		return this.serverPort;
 	}
 
 	@Override
 	public boolean isSecure() {
-		// TODO Auto-generated method stub
+		// We are only dealing with http requests
 		return false;
 	}
 
@@ -179,7 +298,6 @@ public class myHttpServletRequest implements HttpServletRequest {
 	public void setCharacterEncoding(String encoding)
 			throws UnsupportedEncodingException {
 		// TODO check for supported encodings
-		
 		this.characterEncoding = encoding;
 	}
 	
@@ -194,8 +312,8 @@ public class myHttpServletRequest implements HttpServletRequest {
 
 	@Override
 	public String getContextPath() {
-		// TODO Auto-generated method stub
-		return null;
+		// "For servlets in the default (root) context, this method returns ''"
+		return this.contextPath;
 	}
 
 	@Override
@@ -205,9 +323,15 @@ public class myHttpServletRequest implements HttpServletRequest {
 	}
 
 	@Override
-	public long getDateHeader(String arg0) {
-		// TODO Auto-generated method stub
-		return 0;
+	public long getDateHeader(String header) {
+		ArrayList<String> values = this.headers.get(header);
+		if (values == null) throw new IllegalArgumentException();
+		try {
+			Date d = ReqRes.parseDate(values.get(0));
+			return d.getTime();
+		} catch (ParseException e) {
+			throw new IllegalArgumentException();
+		}
 	}
 
 	@Override
@@ -218,13 +342,13 @@ public class myHttpServletRequest implements HttpServletRequest {
 
 	@Override
 	public Enumeration<String> getHeaderNames() {
-		return new HashEnum<String> (this.headers.keySet().iterator());
+		return new IterEnumeration<String> (this.headers.keySet().iterator());
 	}
 
 	@Override
 	public Enumeration<String> getHeaders(String header) {
 		ArrayList<String> matchedHeaders = this.headers.get(header);
-		return (matchedHeaders == null) ? null : new HashEnum<String>(matchedHeaders.iterator());
+		return (matchedHeaders == null) ? null : new IterEnumeration<String>(matchedHeaders.iterator());
 	}
 
 	@Override
@@ -240,14 +364,22 @@ public class myHttpServletRequest implements HttpServletRequest {
 
 	@Override
 	public String getPathInfo() {
-		// TODO Auto-generated method stub
-		return null;
+		try {
+			return URLDecoder.decode(this.pathInfo, this.characterEncoding);
+		} catch (UnsupportedEncodingException e) {
+			// TODO
+			return null;
+		}
 	}
 
 	@Override
 	public String getQueryString() {
-		// TODO Auto-generated method stub
-		return null;
+		try {
+			return URLDecoder.decode(this.queryString, this.characterEncoding);
+		} catch (UnsupportedEncodingException e) {
+			// TODO
+			return null;
+		}
 	}
 
 	@Override
@@ -258,14 +390,23 @@ public class myHttpServletRequest implements HttpServletRequest {
 
 	@Override
 	public String getRequestURI() {
-		// TODO Auto-generated method stub
-		return null;
+		// from the protocol name up to the query string
+		String reqPath = this.reqPath;
+		if (reqPath.indexOf("http://") != -1) {
+			reqPath = reqPath.replace("http://", "");
+		}
+		if (reqPath.indexOf("?") != -1) {
+			reqPath = reqPath.split("\\?")[0];
+		}
+		return reqPath;
 	}
 
 	@Override
 	public StringBuffer getRequestURL() {
 		// TODO Auto-generated method stub
-		return null;
+		// INCLUDES protocol, server name, port number, and server path
+		// DOES NOT INCLUDE query string
+		return new StringBuffer("http://" + this.serverName + ":" + this.serverPort + this.servletPath + this.pathInfo);
 	}
 
 	@Override
@@ -276,8 +417,7 @@ public class myHttpServletRequest implements HttpServletRequest {
 
 	@Override
 	public String getServletPath() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.servletPath;
 	}
 
 	@Override
@@ -287,10 +427,7 @@ public class myHttpServletRequest implements HttpServletRequest {
 
 	@Override
 	public HttpSession getSession(boolean create) {
-		if (create && this.session == null) {
-			this.session = new myHttpSession();
-		}
-		return this.session;
+		return (create && this.session == null) ? new myHttpSession() : this.session;
 	}
 
 	@Override
@@ -324,6 +461,11 @@ public class myHttpServletRequest implements HttpServletRequest {
 		return null; // DO NOT IMPLEMENT
 	}
 
+	@Override
+	public String getRealPath(String arg0) {
+		return null; // DEPRECATED
+	}
+	
 	@Override
 	public RequestDispatcher getRequestDispatcher(String arg0) {
 		return null; // DO NOT IMPLEMENT

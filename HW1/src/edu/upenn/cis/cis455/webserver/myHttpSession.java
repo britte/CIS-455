@@ -31,7 +31,7 @@ public class myHttpSession implements HttpSession {
 	@Override
 	public Enumeration<String> getAttributeNames() {
 		if (!valid) throw new IllegalStateException();
-		return new HashEnum<String>(this.attributes.keySet().iterator());
+		return new IterEnumeration<String>(this.attributes.keySet().iterator());
 	}
 
 	@Override

@@ -30,7 +30,7 @@ public class myServletContext implements ServletContext {
 
 	@Override
 	public Enumeration getAttributeNames() {
-		return new HashEnum<String>(this.attributes.keySet().iterator());
+		return new IterEnumeration<String>(this.attributes.keySet().iterator());
 	}
 
 	@Override
@@ -46,7 +46,7 @@ public class myServletContext implements ServletContext {
 
 	@Override
 	public Enumeration getInitParameterNames() {
-		return new HashEnum<String>(this.initParams.keySet().iterator());
+		return new IterEnumeration<String>(this.initParams.keySet().iterator());
 	}
 
 	@Override
