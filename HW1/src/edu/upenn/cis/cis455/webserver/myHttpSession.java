@@ -1,29 +1,43 @@
 package edu.upenn.cis.cis455.webserver;
 
+import java.util.Date;
 import java.util.Enumeration;
+import java.util.HashMap;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionContext;
 
 public class myHttpSession implements HttpSession {
-
-	@Override
-	public Object getAttribute(String arg0) {
-		// TODO Auto-generated method stub
-		return null;
+	
+	HashMap<String,Object> attributes;
+	ServletContext context;
+	Date creationTime;
+	int maxInactiveInterval = 0;
+	boolean isNew = true;
+	boolean valid = true;
+	
+	public myHttpSession() {
+		attributes = new HashMap<String,Object>();
+		creationTime = new Date();
 	}
 
 	@Override
-	public Enumeration getAttributeNames() {
-		// TODO Auto-generated method stub
-		return null;
+	public Object getAttribute(String attr) {
+		if (!valid) throw new IllegalStateException();
+		return this.attributes.get(attr);
+	}
+
+	@Override
+	public Enumeration<String> getAttributeNames() {
+		if (!valid) throw new IllegalStateException();
+		return new HashEnum<String>(this.attributes.keySet().iterator());
 	}
 
 	@Override
 	public long getCreationTime() {
-		// TODO Auto-generated method stub
-		return 0;
+		if (!valid) throw new IllegalStateException();
+		return this.creationTime.getTime();
 	}
 
 	@Override
@@ -40,16 +54,51 @@ public class myHttpSession implements HttpSession {
 
 	@Override
 	public int getMaxInactiveInterval() {
-		// TODO Auto-generated method stub
-		return 0;
+		if (!valid) throw new IllegalStateException();
+		return this.maxInactiveInterval;
 	}
 
 	@Override
 	public ServletContext getServletContext() {
-		// TODO Auto-generated method stub
-		return null;
+		if (!valid) throw new IllegalStateException();
+		return this.context;
 	}
 
+	@Override
+	public void invalidate() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean isNew() {
+		if (!valid) throw new IllegalStateException();
+		return this.isNew;
+	}
+
+	@Override
+	public void removeAttribute(String attr) {
+		if (!valid) throw new IllegalStateException();
+		this.attributes.remove(attr);
+	}
+
+	@Override
+	public void setAttribute(String attrName, Object attrVal) {
+		if (!valid) throw new IllegalStateException();
+		this.attributes.put(attrName, attrVal);
+	}
+
+	@Override
+	public void setMaxInactiveInterval(int i) {
+		if (!valid) throw new IllegalStateException();
+		this.maxInactiveInterval = i;
+	}
+	
+	//
+	// Deprecated or Do Not Implement
+	//
+	
+	
 	@SuppressWarnings("deprecation")
 	@Override
 	public HttpSessionContext getSessionContext() {
@@ -65,45 +114,14 @@ public class myHttpSession implements HttpSession {
 	public String[] getValueNames() {
 		return null; // DEPRECATED
 	}
-
-	@Override
-	public void invalidate() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public boolean isNew() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
+	
 	@Override
 	public void putValue(String arg0, Object arg1) {
 		// DEPRECATED
 	}
-
-	@Override
-	public void removeAttribute(String arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
+	
 	@Override
 	public void removeValue(String arg0) {
 		// DEPRECATED
 	}
-
-	@Override
-	public void setAttribute(String arg0, Object arg1) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void setMaxInactiveInterval(int arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
 }

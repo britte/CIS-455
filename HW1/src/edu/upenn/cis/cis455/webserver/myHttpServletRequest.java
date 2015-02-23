@@ -4,7 +4,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 
@@ -16,23 +19,33 @@ import javax.servlet.http.HttpSession;
 
 public class myHttpServletRequest implements HttpServletRequest {
 
+	private String method; // TODO
+	private String path; // TODO
+	private String version; // TODO
+	
+	private HashMap<String,ArrayList<String>> headers; // TODO
+	
 	private String characterEncoding = "ISO-8859-1";
+	private int contentLength; // TODO
+	private String contentType; // TODO
 	private Locale locale = null;
+	
+	private HashMap<String,Object> attributes;
+	private HashMap<String,String[]> params;
+	private myHttpSession session;
 	
 	//
 	// ServletResponse Methods
 	//
 	
 	@Override
-	public Object getAttribute(String arg0) {
-		// TODO Auto-generated method stub
-		return null;
+	public Object getAttribute(String attr) {
+		return this.attributes.get(attr);
 	}
 
 	@Override
-	public Enumeration getAttributeNames() {
-		// TODO Auto-generated method stub
-		return null;
+	public Enumeration<String> getAttributeNames() {
+		return new HashEnum<String>(this.attributes.keySet().iterator());
 	}
 
 	@Override
@@ -42,20 +55,12 @@ public class myHttpServletRequest implements HttpServletRequest {
 
 	@Override
 	public int getContentLength() {
-		// TODO Auto-generated method stub
-		return 0;
+		return this.contentLength;
 	}
 
 	@Override
 	public String getContentType() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public ServletInputStream getInputStream() throws IOException {
-		// DO NOT IMPLEMENT
-		return null;
+		return this.contentType;
 	}
 
 	@Override
@@ -82,39 +87,29 @@ public class myHttpServletRequest implements HttpServletRequest {
 	}
 
 	@Override
-	public Enumeration getLocales() {
-		// DO NOT IMPLEMENT
-		return null;
-	}
-
-	@Override
-	public String getParameter(String arg0) {
-		// TODO Auto-generated method stub
-		return null;
+	public String getParameter(String param) {
+		String[] matchedParams = this.params.get(param);
+		return (matchedParams == null) ? null : matchedParams[0];
 	}
 
 	@Override
 	public Map getParameterMap() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.params;
 	}
 
 	@Override
-	public Enumeration getParameterNames() {
-		// TODO Auto-generated method stub
-		return null;
+	public Enumeration<String> getParameterNames() {
+		return new HashEnum<String>(this.params.keySet().iterator());
 	}
 
 	@Override
-	public String[] getParameterValues(String arg0) {
-		// TODO Auto-generated method stub
-		return null;
+	public String[] getParameterValues(String param) {
+		return this.params.get(param);
 	}
 
 	@Override
 	public String getProtocol() {
-		// TODO Auto-generated method stub
-		return null;
+		return "HTTP/" + this.version; // ex: HTTP/1.1
 	}
 
 	@Override
@@ -148,12 +143,6 @@ public class myHttpServletRequest implements HttpServletRequest {
 	}
 
 	@Override
-	public RequestDispatcher getRequestDispatcher(String arg0) {
-		// DO NOT IMPLEMENT
-		return null;
-	}
-
-	@Override
 	public String getScheme() {
 		return "http";
 	}
@@ -177,15 +166,13 @@ public class myHttpServletRequest implements HttpServletRequest {
 	}
 
 	@Override
-	public void removeAttribute(String arg0) {
-		// TODO Auto-generated method stub
-		
+	public void removeAttribute(String attr) {
+		this.attributes.remove(attr);
 	}
 
 	@Override
-	public void setAttribute(String arg0, Object arg1) {
-		// TODO Auto-generated method stub
-		
+	public void setAttribute(String attrName, Object attrVal) {
+		this.attributes.put(attrName, attrVal);
 	}
 
 	@Override
@@ -224,44 +211,37 @@ public class myHttpServletRequest implements HttpServletRequest {
 	}
 
 	@Override
-	public String getHeader(String arg0) {
-		// TODO Auto-generated method stub
-		return null;
+	public String getHeader(String header) {
+		ArrayList<String> matchedHeaders = this.headers.get(header);
+		return (matchedHeaders == null) ? null : matchedHeaders.get(0);
 	}
 
 	@Override
-	public Enumeration getHeaderNames() {
-		// TODO Auto-generated method stub
-		return null;
+	public Enumeration<String> getHeaderNames() {
+		return new HashEnum<String> (this.headers.keySet().iterator());
 	}
 
 	@Override
-	public Enumeration getHeaders(String arg0) {
-		// TODO Auto-generated method stub
-		return null;
+	public Enumeration<String> getHeaders(String header) {
+		ArrayList<String> matchedHeaders = this.headers.get(header);
+		return (matchedHeaders == null) ? null : new HashEnum<String>(matchedHeaders.iterator());
 	}
 
 	@Override
-	public int getIntHeader(String arg0) {
-		// TODO Auto-generated method stub
-		return 0;
+	public int getIntHeader(String header) {
+		ArrayList<String> matchedHeaders = this.headers.get(header);
+		return Integer.parseInt(matchedHeaders.get(0));
 	}
 
 	@Override
 	public String getMethod() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.method;
 	}
 
 	@Override
 	public String getPathInfo() {
 		// TODO Auto-generated method stub
 		return null;
-	}
-
-	@Override
-	public String getPathTranslated() {
-		return null; // DO NOT IMPLEMENT
 	}
 
 	@Override
@@ -302,20 +282,15 @@ public class myHttpServletRequest implements HttpServletRequest {
 
 	@Override
 	public HttpSession getSession() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.session;
 	}
 
 	@Override
-	public HttpSession getSession(boolean arg0) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Principal getUserPrincipal() {
-		// DO NOT IMPLEMENT
-		return null;
+	public HttpSession getSession(boolean create) {
+		if (create && this.session == null) {
+			this.session = new myHttpSession();
+		}
+		return this.session;
 	}
 
 	@Override
@@ -330,20 +305,48 @@ public class myHttpServletRequest implements HttpServletRequest {
 	}
 
 	@Override
-	public boolean isRequestedSessionIdFromUrl() {
-		return false; // DEPRECATED
-	}
-
-	@Override
 	public boolean isRequestedSessionIdValid() {
 		// TODO Auto-generated method stub
 		return false;
 	}
+	
+	//
+	// Deprecated or Do Not Implement Methods
+	//
 
 	@Override
+	public ServletInputStream getInputStream() throws IOException {
+		return null; // DO NOT IMPLEMENT
+	}
+	
+	@Override
+	public Enumeration getLocales() {
+		return null; // DO NOT IMPLEMENT
+	}
+
+	@Override
+	public RequestDispatcher getRequestDispatcher(String arg0) {
+		return null; // DO NOT IMPLEMENT
+	}
+	
+	@Override
+	public String getPathTranslated() {
+		return null; // DO NOT IMPLEMENT
+	}
+	
+	@Override
+	public Principal getUserPrincipal() {
+		return null; // DO NOT IMPLEMENT
+	}
+	
+	@Override
+	public boolean isRequestedSessionIdFromUrl() {
+		return false; // DEPRECATED
+	}
+	
+	@Override
 	public boolean isUserInRole(String arg0) {
-		// DO NOT IMPLEMENT
-		return false;
+		return false; // DO NOT IMPLEMENT
 	}
 
 }
