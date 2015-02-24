@@ -42,14 +42,15 @@ public class myHttpServletRequest implements HttpServletRequest {
 	
 	private String version; 
 	
-	private HashMap<String,ArrayList<String>> headers; 
+	private HashMap<String,ArrayList<String>> headers = new HashMap<String,ArrayList<String>>(); 
+	private ArrayList<Cookie> cookies = new ArrayList<Cookie>();
 	private String lastSeenHeader;
-	private StringBuilder body;
-	
 	private String characterEncoding = "ISO-8859-1";
 	private int contentLength; // TODO
 	private String contentType; // TODO
 	private Locale locale = null;
+	
+	private StringBuilder body;
 	
 	private HashMap<String,Object> attributes;
 	private HashMap<String,String[]> params;
@@ -84,7 +85,6 @@ public class myHttpServletRequest implements HttpServletRequest {
 	//
 	
 	private boolean parseStatusLine(String statusLine) {
-//		logger.info(statusLine);
 		
 		String request[] = statusLine.split(" ");
 		if (request.length != 3) {
@@ -106,18 +106,22 @@ public class myHttpServletRequest implements HttpServletRequest {
 	}
 	
 	private void parseHeader(String header) {
-//		logger.info(header);
 		String components[] = header.split(":");
 		
 		if (components.length > 1) { // line format = Header: value 
-			ArrayList<String> values = this.headers.get(components[0]);
-			if (values == null) values = new ArrayList<String>();
-			
-			values.add(components[1].trim());
-			this.headers.put(components[0], values);
-			
+			if (components[0] == "Cookie") {
+				String[] cookies = components[1].split(";");
+				for (String c : cookies) {
+					this.cookies.add(ReqRes.parseCookieHeader(c.trim()));
+				}
+			} else {
+				ArrayList<String> values = this.headers.get(components[0]);
+				if (values == null) values = new ArrayList<String>();
+				
+				values.add(components[1].trim());
+				this.headers.put(components[0], values);	
+			}
 			this.lastSeenHeader = components[0];
-			// headerCheck(components[0]);
 		} else { // line format = value (continued from last line with header)
 			ArrayList<String> values = headers.get(lastSeenHeader);
 			values.add(components[0].trim());
@@ -297,7 +301,6 @@ public class myHttpServletRequest implements HttpServletRequest {
 	@Override
 	public void setCharacterEncoding(String encoding)
 			throws UnsupportedEncodingException {
-		// TODO check for supported encodings
 		this.characterEncoding = encoding;
 	}
 	
@@ -318,8 +321,7 @@ public class myHttpServletRequest implements HttpServletRequest {
 
 	@Override
 	public Cookie[] getCookies() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.cookies.toArray(new Cookie[this.cookies.size()]);
 	}
 
 	@Override

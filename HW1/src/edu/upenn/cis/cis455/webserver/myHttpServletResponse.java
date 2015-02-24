@@ -247,6 +247,11 @@ public class myHttpServletResponse implements HttpServletResponse {
 			writer.print(ReqRes.generateHeader("Server", ReqRes.formatDate(ReqRes.getLastModified())));
 		}
 		// TODO Connection Close header
+		
+		// Cookies 
+		for (Cookie c : this.cookies) {
+			writer.print(ReqRes.generateCookieHeader(c));
+		}
 	}
 	
 	//

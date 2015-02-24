@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.TimeZone;
 
+import javax.servlet.http.Cookie;
+
 public class ReqRes {
 
 	// Date Time Helpers
@@ -71,5 +73,36 @@ public class ReqRes {
 	final static String generateHeader(String header, String value) {
 		return String.format("%s: %s\r\n", header, value);
 	}
-
+	
+	final static String generateCookieHeader(Cookie c) {
+		// TODO expires, httponly ? 
+		// Set-Cookie: name=value(; "attr"=value)*
+		StringBuilder s = new StringBuilder();
+		s.append(c.getName() + "=" + c.getValue() + ";");
+		s.append("Max-Age=" + Integer.toString(c.getMaxAge()) + ";");
+		s.append("Domain=" + c.getDomain() + ";");
+		s.append("Path=" + c.getPath() + ";");
+		if (c.getSecure()) s.append("Secure");
+		return s.toString();
+	}
+	
+	// Request Parsing Helpers
+	final static Cookie parseCookieHeader(String cookie) {
+		String[] c = cookie.split("=");
+		return new Cookie(c[0], c[1]);
+	}
+	
+	final static boolean modifiedSince(String modString, File f) {
+		String formats[] = {"EEE, d MMM yyyy hh:mm:ss z","EEEE, d-MMM-yy hh:mm:ss z","EEE MMM d hh:mm:ss yyyy"};
+		for (int i = 0; i < formats.length; i++) {
+			SimpleDateFormat formatted = new SimpleDateFormat(formats[i]);
+			try {
+				Date d = formatted.parse(modString);
+				if (new Date(f.lastModified()).after(d)) return true;
+			} catch (ParseException e) {
+				continue;
+			}
+		}	
+		return false;
+	}	
 }
