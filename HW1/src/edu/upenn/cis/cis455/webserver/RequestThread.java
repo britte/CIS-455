@@ -54,7 +54,7 @@ public class RequestThread extends PoolThread {
 	}
 
 	public void run() {
-		while(pool.running) {
+		while(true) {
 			try {
 				client = server.accept();
 				logger.info("Connection established");
@@ -66,6 +66,5 @@ public class RequestThread extends PoolThread {
 				logger.error("Error reading from client");
 			}
 		}
-		logger.info(String.format("%s shutting down", this.getName()));
 	}
 }

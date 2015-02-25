@@ -41,10 +41,7 @@ public class HttpServer {
 		
 		ThreadPool pool = new ThreadPool();
 		
-		for (int i = 0; i < requestThreads; i++) {
-			// Create a RequestThread to listen for server requests
-			pool.addThread(new RequestThread(reqQ, capacity, server, root));
-		}
+		RequestThread req = new RequestThread(reqQ, capacity, server, root);
 		
 		for (int i = 0; i < responseThreads; i++) {
 			// Create a thread pool of ResponseThreads to respond to requests
@@ -52,9 +49,9 @@ public class HttpServer {
 		}
 		
 		pool.start();
+		req.start();
 		
 		while (pool.running){}
-		
 		System.exit(0);
 	}
 	
