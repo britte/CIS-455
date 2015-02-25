@@ -45,7 +45,7 @@ public class myHttpServletRequest implements HttpServletRequest {
 	
 	private HashMap<String,ArrayList<String>> headers = new HashMap<String,ArrayList<String>>(); 
 	private ArrayList<Cookie> cookies = new ArrayList<Cookie>();
-	private String lastSeenHeader;
+
 	private String characterEncoding = "ISO-8859-1";
 	private int contentLength; // TODO
 	private String contentType; // TODO
@@ -61,93 +61,36 @@ public class myHttpServletRequest implements HttpServletRequest {
 	private HashMap<String, myHttpSession> sessions;
 	private myHttpServletResponse res;
 	
-	public myHttpServletRequest(Socket client, myServletContext context, myHttpServletResponse res) throws IOException {
-		this.client = client;
-		this.in = new BufferedReader(new InputStreamReader(client.getInputStream()));
+	public myHttpServletRequest(HttpRequest req, myServletContext context) throws IOException {
+		this.method = req.getMethod();
+		this.reqPath = req.getPath();
+		this.version = req.getVersion();
+		this.headers = req.getHeaders();
+		parseCookies();
+		
+		this.client = req.getClient();
+		this.in = req.getReader();
+//		this.in = new BufferedReader(new InputStreamReader(client.getInputStream()));
 		this.context = context;
 		this.sessions = (HashMap<String, myHttpSession>) context.getAttribute("Sessions");
-		this.res = res;
-		
-		// Build request
-		String line;
-		boolean statusDigested = false;
-		boolean startBody = false;
-		
-		while ((line = in.readLine()) != null) {
-			if (!statusDigested) {
-				parseStatusLine(line); // TODO throw 400 if bad
-				statusDigested = true;
-			} else if (!line.isEmpty()){
-				if (startBody) parseBody(line);
-				parseHeader(line); // TODO throw 400 if bad
-			} else if (line.isEmpty()){
-				if (!startBody) startBody = true;
-				else break;
-			}
-		}
 	}
-	
-	//
-	// Parser Methods
-	//
-	
-	private boolean parseStatusLine(String statusLine) {
 		
-		String request[] = statusLine.split(" ");
-		if (request.length != 3) {
-			logger.error("Invalid request: status line misformatted");
-			return false;
-		}
-		
-		this.method = request[0];
-		
-		// Check that header is a valid method
-		if (!(method.equals("GET") || method.equals("HEAD"))) {
-			logger.error("Invalid request: unsupported method");
-			return false;
-		}
-		
-		this.reqPath = request[1]; // TODO handle absolute path
-		this.version = request[2];
-		return true;
-	}
-	
-	private void parseHeader(String header) {
-		String components[] = header.split(":");
-		
-		if (components.length > 1) { // line format = Header: value 
-			if (components[0] == "Cookie") {
-				String[] cookies = components[1].split(";");
+	private void parseCookies() {
+		ArrayList<String> values = this.headers.get("Cookie");
+		if (values.size() > 0) {
+			for (String v : values) {
+				String[] cookies = v.split(";");
 				for (String cStr : cookies) {
 					Cookie c = ReqRes.parseCookieHeader(cStr.trim());
 					if (c.getName().equalsIgnoreCase("jsessionid")) {
 						this.setSession(c.getValue());
 					}
 					this.cookies.add(c);
-				}
-			} else {
-				ArrayList<String> values = this.headers.get(components[0]);
-				if (values == null) values = new ArrayList<String>();
-				
-				values.add(components[1].trim());
-				this.headers.put(components[0], values);	
-			}
-			this.lastSeenHeader = components[0];
-		} else { // line format = value (continued from last line with header)
-			ArrayList<String> values = headers.get(lastSeenHeader);
-			values.add(components[0].trim());
-			headers.put(lastSeenHeader, values);
+				}	
+			}	
 		}
 	}
-	
-	private void parseBody(String body) {
-		this.body.append(body);
-	}
-	
-	private boolean isAbsoluteUrl(String path) {
-		return path.indexOf("http://") != -1;
-	}
-	
+		
 	private void parsePath(String path) {
 		String url = path;
 		// format: scheme://domain[:port]/path[?query][#fragment_id]

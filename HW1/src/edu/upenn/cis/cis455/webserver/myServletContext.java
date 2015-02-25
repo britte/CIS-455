@@ -14,13 +14,13 @@ import javax.servlet.ServletException;
 
 public class myServletContext implements ServletContext {
 
-	private String path;
+	private String root;
 	private String name;
 	private HashMap<String, Object> attributes = new HashMap<String, Object>();;
 	private HashMap<String, String> initParams;
 	
-	public myServletContext(String path, String name, HashMap<String,String> initParams) {
-		this.path = path;
+	public myServletContext(String root, String name, HashMap<String,String> initParams) {
+		this.root = root;
 		this.name = name;
 		this.initParams = initParams;
 	}
@@ -40,7 +40,7 @@ public class myServletContext implements ServletContext {
 	public ServletContext getContext(String path) {
 		// Since we are only supporting a single context, 
 		// the only valid requested path is that of the current context
-		return (this.path.equals(path)) ? this : null;
+		return (path.equals("/")) ? this : null;
 	}
 
 	@Override
@@ -65,8 +65,7 @@ public class myServletContext implements ServletContext {
 
 	@Override
 	public String getRealPath(String path) {
-		// TODO Confirm what is expected
-		return null;
+		return this.root + path;
 	}
 
 	@Override

@@ -1,21 +1,23 @@
 package edu.upenn.cis.cis455.webserver;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Vector;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
 
 import org.apache.log4j.Logger;
 
 public class ResponseThread extends PoolThread {
 	
 	private Vector<HttpRequest> q;
-	private String root;
 	private HttpRequest req;
 	
 	static final Logger logger = Logger.getLogger(RequestThread.class);	
 	
-	public ResponseThread(Vector<HttpRequest> q, String root) {
+	public ResponseThread(Vector<HttpRequest> q) {
 		this.q = q;
-		this.root = root;
 	}
 	
 	/**
@@ -44,12 +46,25 @@ public class ResponseThread extends PoolThread {
 			try {
 				this.req = readFromQueue();
 				logger.info(String.format("%s consumed %s from shared queue", this.getName(), req));
-				HttpResponse res = new HttpResponse(req, root, pool);
-				this.req = null;
+
+				// Determine if this request is standards
+				// or if it is for a servlet
+				String reqPath = req.getPath(); // TODO: handle absolute path
+				ServerContext c = this.pool.getContext();
+				if (c.servletContext != null && c.servletMappings.containsKey(reqPath)) {
+					if (!c.isInit) c.servlet.init();
+					c.servlet.service(new myHttpServletRequest(req, c.servletContext), new myHttpServletResponse(req.getClient()));
+				} else {
+					HttpResponse res = new HttpResponse(req, c.root, this.pool);
+				}
+				req = null;
 			} catch (InterruptedException ex) {
 				logger.error("Interrupt Exception in Response Thread");
 			} catch (IOException e) {
 				logger.error("Error responding to client");
+			} catch (ServletException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		}
 		interrupt();

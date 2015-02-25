@@ -19,13 +19,11 @@ public class RequestThread extends PoolThread {
 	private final int capacity;
 	private ServerSocket server;
 	private Socket client;
-	private String root;
 	
-	public RequestThread(Vector<HttpRequest> q, int capacity, ServerSocket server, String root) {
+	public RequestThread(Vector<HttpRequest> q, int capacity, ServerSocket server) {
 		this.q = q;
 		this.capacity = capacity;
 		this.server = server;
-		this.root = root;
 	}
 	
 	/**

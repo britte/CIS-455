@@ -19,7 +19,8 @@ public class myHttpServletResponse implements HttpServletResponse {
 
 	private Socket client;
 	private int bufferSize = 512; // default for BufferedOutputStream 
-	private PrintWriter writer;
+	private myPrintWriter writer;
+	private boolean isCommitted = false;
 	
 	private HashMap<String,ArrayList<String>> headers = new HashMap<String, ArrayList<String>>();
 	private int statusCode = this.SC_OK;
@@ -31,25 +32,60 @@ public class myHttpServletResponse implements HttpServletResponse {
 	private Locale locale;
 	
 	public myHttpServletResponse(Socket client) throws IOException {
-		this.writer = new PrintWriter(new BufferedOutputStream(client.getOutputStream(), this.bufferSize));
+		this.writer = new myPrintWriter(new BufferedOutputStream(client.getOutputStream(), this.bufferSize));
 	}
 	
 	
 	private class myPrintWriter extends PrintWriter {
 		
-		// TODO: idk more mods probs
+		private StringBuilder sb = new StringBuilder();
 		
-		private boolean headersSent = false;
-		
-		public myPrintWriter(Writer writer) { super(writer); }
+		public myPrintWriter(OutputStream stream) { super(stream); }
 		
 		@Override
 		public void write(int c) {
-			if (!headersSent) {
-				generateHeaders();
-				headersSent = true;
+			if (isCommitted) {
+				super.write(c);
+			} else {
+				this.sb.append(c);
 			}
-			super.write(c);
+		}
+		
+		private void generateHeaders() {
+			isCommitted = true;
+			writer.print(ReqRes.generateStatus(statusCode)); // Status header
+			// Server header
+			if (headers.containsKey("Server")) {
+				writer.print(ReqRes.generateHeader("Server", headers.get("Server")));
+			} else {
+				writer.print(ReqRes.generateHeader("Server", "HttpServer/1.0"));
+			}
+			
+			// Date header
+			if (headers.containsKey("Date")) {
+				writer.print(ReqRes.generateHeader("Date", headers.get("Date")));
+			} else {
+				writer.print(ReqRes.generateHeader("Date", ReqRes.formatDate(new Date())));
+			}
+			
+			// Last Modified header
+			if (headers.containsKey("Last-Modified")) {
+				writer.print(ReqRes.generateHeader("Last-Modified", headers.get("Last-Modified")));
+			} else {
+				writer.print(ReqRes.generateHeader("Server", ReqRes.formatDate(ReqRes.getLastModified())));
+			}
+			// TODO Connection Close header
+			
+			// Cookies 
+			for (Cookie c : cookies) {
+				writer.print(ReqRes.generateCookieHeader(c));
+			}
+		}
+		
+		public void safeFlush() {
+			contentLength = sb.length();
+			generateHeaders();
+			writer.print(sb.toString());
 		}
 		
 	}
@@ -60,7 +96,7 @@ public class myHttpServletResponse implements HttpServletResponse {
 	
 	@Override
 	public void flushBuffer() throws IOException {
-		this.writer.flush(); // confirm
+		this.writer.safeFlush();
 	}
 
 	@Override
@@ -85,13 +121,12 @@ public class myHttpServletResponse implements HttpServletResponse {
 
 	@Override
 	public PrintWriter getWriter() throws IOException {
-		return new myPrintWriter(this.writer); // TODO https://piazza.com/class/i4vn9s3ilfg2hs?cid=408
+		return this.writer; // TODO https://piazza.com/class/i4vn9s3ilfg2hs?cid=408
 	}
 
 	@Override
 	public boolean isCommitted() {
-		// TODO Auto-generated method stub
-		return false;
+		return this.isCommitted;
 	}
 
 	@Override
@@ -99,7 +134,7 @@ public class myHttpServletResponse implements HttpServletResponse {
 		try {
 			this.headers = new HashMap<String, ArrayList<String>>();
 			this.statusCode = this.SC_OK;
-			this.writer = new PrintWriter(new BufferedOutputStream(this.client.getOutputStream(), this.bufferSize));
+			this.writer = new myPrintWriter(new BufferedOutputStream(this.client.getOutputStream(), this.bufferSize));
 		} catch (IOException e) {
 			// TODO 
 		}
@@ -108,12 +143,12 @@ public class myHttpServletResponse implements HttpServletResponse {
 	@Override
 	public void resetBuffer() {
 		try {
-			this.writer = new PrintWriter(new BufferedOutputStream(this.client.getOutputStream(), this.bufferSize));
+			this.writer = new myPrintWriter(new BufferedOutputStream(this.client.getOutputStream(), this.bufferSize));
 		} catch (IOException e) {
 			// TODO 
 		}
 	}
-
+	
 	@Override
 	public void setBufferSize(int size) {
 		this.bufferSize = size;
@@ -172,20 +207,21 @@ public class myHttpServletResponse implements HttpServletResponse {
 	}
 
 	@Override
-	public String encodeRedirectURL(String arg0) {
-		// TODO: Since we are implementing sessions through cookies, just send url
-		return null;
+	public String encodeRedirectURL(String url) {
+		// Since we are implementing sessions through cookies, just send url
+		return url;
 	}
 
 	@Override
-	public String encodeURL(String arg0) {
-		// TODO: Since we are implementing sessions through cookies, just send url
-		return null;
+	public String encodeURL(String url) {
+		// Since we are implementing sessions through cookies, just send url
+		return url;
 	}
 
 	@Override
-	public void sendError(int arg0) throws IOException {
+	public void sendError(int sc) throws IOException {
 		// TODO Auto-generated method stub
+		setStatus(sc);
 		
 	}
 
@@ -222,36 +258,6 @@ public class myHttpServletResponse implements HttpServletResponse {
 	@Override
 	public void setStatus(int status) {
 		this.statusCode = status;
-	}
-	
-	private void generateHeaders() {
-		writer.print(ReqRes.generateStatus(this.statusCode)); // Status header
-		// Server header
-		if (this.headers.containsKey("Server")) {
-			writer.print(ReqRes.generateHeader("Server", this.headers.get("Server")));
-		} else {
-			writer.print(ReqRes.generateHeader("Server", "HttpServer/1.0"));
-		}
-		
-		// Date header
-		if (this.headers.containsKey("Date")) {
-			writer.print(ReqRes.generateHeader("Date", this.headers.get("Date")));
-		} else {
-			writer.print(ReqRes.generateHeader("Date", ReqRes.formatDate(new Date())));
-		}
-		
-		// Last Modified header
-		if (this.headers.containsKey("Last-Modified")) {
-			writer.print(ReqRes.generateHeader("Last-Modified", this.headers.get("Last-Modified")));
-		} else {
-			writer.print(ReqRes.generateHeader("Server", ReqRes.formatDate(ReqRes.getLastModified())));
-		}
-		// TODO Connection Close header
-		
-		// Cookies 
-		for (Cookie c : this.cookies) {
-			writer.print(ReqRes.generateCookieHeader(c));
-		}
 	}
 	
 	//

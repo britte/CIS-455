@@ -18,20 +18,12 @@ public class HttpServer {
 	
 	static final Logger logger = Logger.getLogger(HttpServer.class);	
 	
-	private static ServerSocket server;
-	private static int port;
-	private static String root;
-	private static String servletPath;
-	
-	private static myServletContext context;
-	private static myServletConfig config;
-	private static HttpServlet servlet;
-	private static boolean servletInit = false;
+	private static ServerContext context = new ServerContext();
 
 	public static void run() throws IOException {
-		server = new ServerSocket(port);
+		ServerSocket server = new ServerSocket(context.port);
 		
-		logger.info(String.format("Server running on port %d", port));
+		logger.info(String.format("Server running on port %d", context.port));
 		
 		// Create a request queue 
 		Vector<HttpRequest> reqQ = new Vector<HttpRequest>();
@@ -39,13 +31,13 @@ public class HttpServer {
 		int requestThreads = 1;
 		int responseThreads = 20;
 		
-		ThreadPool pool = new ThreadPool();
+		ThreadPool pool = new ThreadPool(context);
 		
-		RequestThread req = new RequestThread(reqQ, capacity, server, root);
+		RequestThread req = new RequestThread(reqQ, capacity, server);
 		
 		for (int i = 0; i < responseThreads; i++) {
 			// Create a thread pool of ResponseThreads to respond to requests
-			pool.addThread(new ResponseThread(reqQ, root));
+			pool.addThread(new ResponseThread(reqQ));
 		}
 		
 		pool.start();
@@ -58,7 +50,7 @@ public class HttpServer {
 	public static void createServlet(String className) {
 		try {
 			Class servletClass = Class.forName(className);
-			servlet = (HttpServlet) servletClass.newInstance();
+			context.servlet = (HttpServlet) servletClass.newInstance();
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 		} catch (InstantiationException e) {
@@ -79,8 +71,8 @@ public class HttpServer {
 				logger.info("Attempting to start server...");
 				
 				try {
-					port = Integer.parseInt(args[0]);
-					root = args[1];
+					context.port = Integer.parseInt(args[0]);
+					context.root = args[1];
 					run();
 				} catch (NumberFormatException e) {
 					throw new IllegalArgumentException("Port must be valid integer");
@@ -90,24 +82,26 @@ public class HttpServer {
 				logger.info("Attempting to start servlet...");
 				
 				try {
-					port = Integer.parseInt(args[0]);
-					root = args[1];
-					servletPath = args[2];
+					context.port = Integer.parseInt(args[0]);
+					context.root = args[1];
+					context.servletPath = args[2];
 					
-					logger.info("Looking for servlet " + servletPath);
-					XmlParser parser = new XmlParser(root, servletPath);
+					logger.info("Parsing servlet " + context.servletPath);
+					XmlParser parser = new XmlParser(context.root, context.servletPath);
 					parser.readFile();
 					
-					context = parser.getServletContext();
-					context.setAttribute("Sessions", new HashMap<String, myHttpSession>());
-					config = parser.getServletConfig();
+					context.servletContext = parser.getServletContext();
+					context.servletContext.setAttribute("Sessions", new HashMap<String, myHttpSession>());
+					context.servletConfig = parser.getServletConfig();
+					context.servletMappings = parser.servletMappings;
 					createServlet(parser.servletClass);
 					if (parser.loadOnStart) {
 						logger.info("Starting servlet " + parser.servletName);
-						servlet.init(config);
-						servletInit = true;
-					}					
-//					run();
+						context.servlet.init(context.servletConfig);
+						context.isInit = true;
+					}		
+					logger.info(context.servletPath + " parsed");
+					run();
 				} catch (NumberFormatException e) {
 					throw new IllegalArgumentException("Port must be valid integer");
 				}

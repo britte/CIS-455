@@ -7,18 +7,25 @@ public class ThreadPool {
 	
 	private Vector<HttpRequest> q = new Vector<HttpRequest>();
 	private ArrayList<PoolThread> threads = new ArrayList<PoolThread>();
+	private ServerContext context;
 	protected boolean running = true;
-
-	public ThreadPool() {};
 	
+	public ThreadPool(ServerContext context) {
+		this.context = context;
+	};
+		
 	public void addThread(PoolThread t) {
-		threads.add(t);
+		this.threads.add(t);
 		t.setPool(this);
 	};
 	
 	public ArrayList<PoolThread> getThreads() {
-		return threads;
+		return this.threads;
 	};
+	
+	public ServerContext getContext() {
+		return this.context;
+	}
 	
 	public void start() {
 		for (PoolThread thread : threads) {
@@ -28,5 +35,6 @@ public class ThreadPool {
 	
 	public void shutdown() {
 		this.running = false;
+		this.context.servlet.destroy();
 	};
 }

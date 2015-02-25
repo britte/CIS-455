@@ -16,7 +16,7 @@ public class XmlParser {
 	private static Logger logger = Logger.getLogger(HttpServer.class);	
 	
 	protected String root;
-	protected String path;
+	protected String appPath;
 	protected String displayName;
 	protected boolean loadOnStart = false;
 //	protected HashMap<String,String> servlets; // multiple servlet model
@@ -28,10 +28,9 @@ public class XmlParser {
 	
 	public XmlParser(String root, String path) {
 		this.root = root;
-		this.path = path;
+		this.appPath = path;
 	}
-	
-	
+		
 	/*
 	 * Handler class for parsing out servlet xml files.Passed into a SAXParser.
 	 */
@@ -130,7 +129,7 @@ public class XmlParser {
 	
 	public void readFile() throws Exception {
 		Handler h = new Handler();
-		File file = new File(path);
+		File file = new File(this.appPath); 
 		if (file.exists() == false) {
 			System.err.println("error: cannot find " + file.getPath());
 			System.exit(-1);
@@ -148,7 +147,7 @@ public class XmlParser {
 	}
 		
 	public myServletContext getServletContext() {
-		return new myServletContext(this.path, this.displayName, this.contextParams);
+		return new myServletContext(this.root, this.displayName, this.contextParams);
 	}
 	
 	

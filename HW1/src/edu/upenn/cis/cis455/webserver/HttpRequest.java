@@ -7,19 +7,24 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import javax.servlet.http.Cookie;
+
 import org.apache.log4j.Logger;
 
 public class HttpRequest {
 	
 	private Socket client;
+	private BufferedReader in;
 	
-	// Parse method components
+	// Status line components
 	private String method;
 	private String path;
 	private String version;
 	
-	private HashMap<String, String> headers = new HashMap<String, String>();
-	private String lastHeader = "";
+	private HashMap<String, ArrayList<String>> headers = new HashMap<String, ArrayList<String>>();
+	private String lastSeenHeader = "";
+	
+	// Special header values
 	private boolean hasHost = false;
 	private boolean ifMod = false;
 	private boolean ifUnmod = false;
@@ -31,67 +36,72 @@ public class HttpRequest {
 	public HttpRequest(Socket client) throws IOException {
 		
 		this.client = client;
-		BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
-		String line;
+		in = new BufferedReader(new InputStreamReader(client.getInputStream()));
 		
-		// Build Request
-		boolean statusDigested = false;
-		boolean startBody = false;
-		
-		while ((line = in.readLine()) != null) {
-			if (!statusDigested) {
-				parseStatusLine(line);
-				statusDigested = true;
-			} else if (!line.isEmpty()){
-//				if (startBody) parseBody(line);
-				parseHeader(line);
-			} else if (line.isEmpty()){
-//				if (!startBody) startBody = true;
-				break;
-			}
-		}
+		readStatusLine();
+		readHeaders();
+		// TODO: parse body
 	}
 	
-	private void parseStatusLine(String statusLine) {
+	//
+	// Parser Methods
+	//
+	
+	private void readStatusLine() throws IOException {
 		logger.info("Recieving request...");
-//		logger.info(statusLine);
-		
+		String statusLine = this.in.readLine();
 		String request[] = statusLine.split(" ");
 		if (request.length != 3) {
+			// TODO: throw error and send response
 			logger.error("Invalid request: request line misformatted");
 			return;
 		}
-		method = request[0];
+		
+		this.method = request[0];
 		
 		// Check that header is a valid method
 		if (!(method.equals("GET") || method.equals("HEAD"))) {
+			// TODO: throw error and send response
 			logger.error("Invalid request: unrecognized method");
 			return;
 		}
 		
-		path = request[1];
-		version = request[2];
+		this.path = request[1];
+		this.version = request[2];
 	}
 	
-	private void parseHeader(String header) {
-//		logger.info(header);
-		String components[] = header.split(":");
+	private void readHeaders() throws IOException {
 		
-		if (components.length > 1) {
-			headers.put(components[0], components[1].trim());
-			lastHeader = components[0];
-			headerCheck(components[0]);
-		} else {
-			String values = headers.get(lastHeader);
-			headers.put(components[0], values + "," + components[1].trim());
+		String headerLine = in.readLine();
+		
+		while(!headerLine.isEmpty()) {
+			String components[] = headerLine.split(":");
+			if (components.length > 1) { // line format = Header: value 
+				ArrayList<String> values = this.headers.get(components[0]);
+				if (values == null) values = new ArrayList<String>();
+				
+				values.add(components[1].trim());
+				this.headers.put(components[0], values);
+				headerCheck(components[0]);
+				this.lastSeenHeader = components[0];
+			} else { // line format = value (continued from last line with header)
+				ArrayList<String> values = headers.get(lastSeenHeader);
+				values.add(components[0].trim());
+				headers.put(lastSeenHeader, values);
+			}
+			headerLine = in.readLine();
 		}
 	}
 	
-	private void headerCheck(String h) {
-		switch (h) {
-			case "Host": this.hasHost = true;
-			case "If-Modified-Since": this.ifMod  = true;
-			case "If-Unmodified-Since": this.ifUnmod = true;
+	/*
+	 * Check for special headers which will require certain
+	 * behavior in the response handling
+	 */
+	private void headerCheck(String name) {
+		switch (name) {
+			case "Host": this.hasHost = true; break;
+			case "If-Modified-Since": this.ifMod  = true; break;
+			case "If-Unmodified-Since": this.ifUnmod = true; break;
 		}
 	}
 	
@@ -100,11 +110,14 @@ public class HttpRequest {
 	}
 	
 	public Socket getClient() { return client; }
-	public String getPath() { return path; }
+	public BufferedReader getReader() { return in; }
 	public String getMethod() { return method; }
+	public String getPath() { return path; }
 	public String getVersion() { return version; }
 	
+	public HashMap<String, ArrayList<String>> getHeaders() { return this.headers; }
+	
 	public boolean hostComplient() { return (!version.equals("1.1") || hasHost); }
-	public String ifMod() { return (ifMod ? headers.get("If-Modified-Since") : null); }
-	public String ifUnmod() { return (ifUnmod ? headers.get("If-Unmodified-Since") : null); }
+	public String ifMod() { return (ifMod ? headers.get("If-Modified-Since").get(0) : null); }
+	public String ifUnmod() { return (ifUnmod ? headers.get("If-Unmodified-Since").get(0) : null); }
 }
