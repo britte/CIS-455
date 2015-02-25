@@ -19,7 +19,6 @@ public class myServletConfig implements ServletConfig {
 	private HashMap<String, String> initParameters;
 	
 	public myServletConfig(String name, myServletContext context, HashMap<String, String> params) {
-		
 		this.servletName = name;
 		this.servletContext = context;
 		this.initParameters = params;

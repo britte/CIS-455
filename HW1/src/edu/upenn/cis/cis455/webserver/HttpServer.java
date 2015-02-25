@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.Set;
 import java.util.Vector;
 
+import javax.servlet.http.HttpServlet;
+
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 
@@ -19,7 +21,11 @@ public class HttpServer {
 	private static int port;
 	private static String root;
 	private static String servletPath;
-	private static ArrayList<String> options;
+	
+	private static myServletContext context;
+	private static myServletConfig config;
+	private static HttpServlet servlet;
+	private static boolean servletInit = false;
 
 	public static void run() throws IOException {
 		server = new ServerSocket(port);
@@ -37,7 +43,6 @@ public class HttpServer {
 		for (int i = 0; i < requestThreads; i++) {
 			// Create a RequestThread to listen for server requests
 			pool.addThread(new RequestThread(reqQ, capacity, server, root));
-			
 		}
 		
 		for (int i = 0; i < responseThreads; i++) {
@@ -50,6 +55,19 @@ public class HttpServer {
 		while (pool.running){}
 		
 		System.exit(0);
+	}
+	
+	public static void createServlet(String className) {
+		try {
+			Class servletClass = Class.forName(className);
+			servlet = (HttpServlet) servletClass.newInstance();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+		}
 	}
 	
 	public static void main(String args[]) throws Exception {
@@ -79,30 +97,24 @@ public class HttpServer {
 					servletPath = args[2];
 					
 					logger.info("Looking for servlet " + servletPath);
-					XmlParser parser = new XmlParser(servletPath);
+					XmlParser parser = new XmlParser(root, servletPath);
 					parser.readFile();
 					
-					myServletConfig config = parser.getServletConfig();
-					
+					context = parser.getServletContext();
+					config = parser.getServletConfig();
+					createServlet(parser.servletClass);
+					if (parser.loadOnStart) {
+						logger.info("Starting servlet " + parser.servletName);
+						servlet.init(config);
+						servletInit = true;
+					}					
 //					run();
 				} catch (NumberFormatException e) {
 					throw new IllegalArgumentException("Port must be valid integer");
 				}
 				break;		
 			default:
-				try {
-					port = Integer.parseInt(args[0]);
-					root = args[1];
-					servletPath = args[2];
-					options = new ArrayList<String>();
-					for (int i = 3; i < args.length; i++) {
-						options.add(args[i]);
-					}
-					run();
-				} catch (NumberFormatException e) {
-					throw new IllegalArgumentException("Port must be valid integer");
-				}
-				break;
+				throw new IllegalArgumentException("Usage: <port> <root directory> [<servlet path>]");
 		}
 	}
 }

@@ -1,6 +1,7 @@
 package edu.upenn.cis.cis455.webserver;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.xml.parsers.SAXParser;
@@ -14,13 +15,19 @@ public class XmlParser {
 	
 	private static Logger logger = Logger.getLogger(HttpServer.class);	
 	
-	private String path;
-	private HashMap<String,String> servlets;
-	private HashMap<String,String> servletMappings;
-	private HashMap<String,String> contextParams;
-	private HashMap<String, HashMap<String,String>> servletParams;
+	protected String root;
+	protected String path;
+	protected String displayName;
+	protected boolean loadOnStart = false;
+//	protected HashMap<String,String> servlets; // multiple servlet model
+	protected String servletName;
+	protected String servletClass;
+	protected HashMap<String,String> servletMappings;
+	protected HashMap<String,String> contextParams;
+	protected HashMap<String, HashMap<String,String>> servletParams;
 	
-	public XmlParser(String path) {
+	public XmlParser(String root, String path) {
+		this.root = root;
 		this.path = path;
 	}
 	
@@ -30,16 +37,18 @@ public class XmlParser {
 	 */
 	static class Handler extends DefaultHandler {
 		private int m_state = 0;
+		private String m_displayName;
 		private String m_servletName;
+		private String m_servletClass;
 		private String m_paramName;
 		private String m_mappingName;
-		HashMap<String,String> m_servlets = new HashMap<String,String>();
+		private boolean m_load_on_start = false;
+//		HashMap<String,String> m_servlets = new HashMap<String,String>();
 		HashMap<String,String> m_servletMappings = new HashMap<String,String>();
 		HashMap<String,String> m_contextParams = new HashMap<String,String>();
 		HashMap<String,HashMap<String,String>> m_servletParams = new HashMap<String,HashMap<String,String>>();
 		
 		public void startElement(String uri, String localName, String qName, Attributes attributes) {
-			logger.info(qName);
 			if (qName.compareTo("servlet-name") == 0) {
 				m_state = (m_state == 0) ? 1 : 50;
 			} else if (qName.compareTo("servlet-class") == 0) {
@@ -56,6 +65,10 @@ public class XmlParser {
 				m_state = 5;
 			} else if (qName.compareTo("url-pattern") == 0) {
 				m_state = 51;
+			} else if (qName.compareTo("display-name") == 0) {
+				m_state = 6;
+			} else if (qName.compareTo("load-on-startup") == 0) {
+				m_state = 7;
 			}
 		}
 		public void characters(char[] ch, int start, int length) {
@@ -64,7 +77,8 @@ public class XmlParser {
 				m_servletName = value;
 				m_state = 0;
 			} else if (m_state == 2) {
-				m_servlets.put(m_servletName, value);
+//				m_servlet.put(m_servletName, value);
+				m_servletClass = value;
 				m_state = 0;
 			} else if (m_state == 30 || m_state == 40) {
 				if (value.trim().length() > 0) {
@@ -103,6 +117,13 @@ public class XmlParser {
 				m_servletMappings.put(m_mappingName, value);
 				m_mappingName = null;
 				m_state = 0;
+			} else if (m_state == 6) {
+				m_displayName = value;
+				m_state = 0;
+			} else if (m_state == 7) {
+				// Since we only support one servlet, load order is moot
+				m_load_on_start = true;
+				m_state = 0;
 			}
 		}
 	}
@@ -117,34 +138,35 @@ public class XmlParser {
 		SAXParser parser = SAXParserFactory.newInstance().newSAXParser();
 		parser.parse(file, h);
 		
-		this.servlets = h.m_servlets;
+		this.servletName = h.m_servletName;
+		this.servletClass = h.m_servletClass;
+		this.displayName = h.m_displayName;
 		this.contextParams = h.m_contextParams;
 		this.servletParams = h.m_servletParams;
 		this.servletMappings = h.m_servletMappings;
+		this.loadOnStart = h.m_load_on_start;
 	}
-	
+		
 	public myServletContext getServletContext() {
-		return new myServletContext(this.contextParams);
+		return new myServletContext(this.path, this.displayName, this.contextParams);
 	}
 	
 	
 	public myServletConfig getServletConfig(){
-		if (this.servlets.isEmpty()) return null;
+		if (this.servletName == null) return null;
 		else {
-			String servletName = this.servlets.keySet().iterator().next();
 			myServletContext context = getServletContext();
-			HashMap<String,String> params = this.servletParams.get(servletName);
-			return new myServletConfig(servletName, context, params);
+			HashMap<String,String> params = this.servletParams.get(this.servletName);
+			return new myServletConfig(this.servletName, context, params);
 		}
 	}
 	
 	public myServletConfig getServletConfig(String servletName){
-		String servlet = this.servlets.get(servletName);
-		if (servlet == null) return null;
+		if (this.servletName == null) return null;
 		else {
 			myServletContext context = getServletContext();
-			HashMap<String,String> params = this.servletParams.get(servletName);
-			return new myServletConfig(servletName, context, params);
+			HashMap<String,String> params = this.servletParams.get(this.servletName);
+			return new myServletConfig(this.servletName, context, params);
 		}
 	}
 }

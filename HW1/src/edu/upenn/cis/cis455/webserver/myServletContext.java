@@ -1,5 +1,7 @@
 package edu.upenn.cis.cis455.webserver;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -14,11 +16,14 @@ import javax.servlet.ServletException;
 
 public class myServletContext implements ServletContext {
 
-	private HashMap<String, Object> attributes;
+	private String path;
+	private String name;
+	private HashMap<String, Object> attributes = new HashMap<String, Object>();;
 	private HashMap<String, String> initParams;
 	
-	public myServletContext(HashMap<String,String> initParams) {
-		this.attributes = new HashMap<String, Object>();
+	public myServletContext(String path, String name, HashMap<String,String> initParams) {
+		this.path = path;
+		this.name = name;
 		this.initParams = initParams;
 	}
 	
@@ -29,14 +34,15 @@ public class myServletContext implements ServletContext {
 	}
 
 	@Override
-	public Enumeration getAttributeNames() {
+	public Enumeration<String> getAttributeNames() {
 		return new IterEnumeration<String>(this.attributes.keySet().iterator());
 	}
 
 	@Override
-	public ServletContext getContext(String arg0) {
-		// TODO Auto-generated method stub
-		return null;
+	public ServletContext getContext(String path) {
+		// Since we are only supporting a single context, 
+		// the only valid requested path is that of the current context
+		return (this.path.equals(path)) ? this : null;
 	}
 
 	@Override
@@ -45,7 +51,7 @@ public class myServletContext implements ServletContext {
 	}
 
 	@Override
-	public Enumeration getInitParameterNames() {
+	public Enumeration<String> getInitParameterNames() {
 		return new IterEnumeration<String>(this.initParams.keySet().iterator());
 	}
 
@@ -60,21 +66,19 @@ public class myServletContext implements ServletContext {
 	}
 
 	@Override
-	public String getRealPath(String arg0) {
-		// TODO Auto-generated method stub
+	public String getRealPath(String path) {
+		// TODO Confirm what is expected
 		return null;
 	}
 
 	@Override
 	public String getServerInfo() {
-		// TODO Auto-generated method stub
-		return null;
+		return "HttpServer/1.0";
 	}
 	
 	@Override
 	public String getServletContextName() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.name;
 	}
 	
 	@Override
