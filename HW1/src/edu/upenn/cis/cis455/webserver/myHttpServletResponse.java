@@ -173,13 +173,13 @@ public class myHttpServletResponse implements HttpServletResponse {
 
 	@Override
 	public String encodeRedirectURL(String arg0) {
-		// TODO "includes the logic to determine whether the session ID needs to be encoded in the URL.
+		// TODO: Since we are implementing sessions through cookies, just send url
 		return null;
 	}
 
 	@Override
 	public String encodeURL(String arg0) {
-		// TODO Auto-generated method stub
+		// TODO: Since we are implementing sessions through cookies, just send url
 		return null;
 	}
 

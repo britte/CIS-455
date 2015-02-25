@@ -3,6 +3,7 @@ package edu.upenn.cis.cis455.webserver;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Set;
 import java.util.Vector;
 
@@ -101,6 +102,7 @@ public class HttpServer {
 					parser.readFile();
 					
 					context = parser.getServletContext();
+					context.setAttribute("Sessions", new HashMap<String, myHttpSession>());
 					config = parser.getServletConfig();
 					createServlet(parser.servletClass);
 					if (parser.loadOnStart) {

@@ -73,7 +73,7 @@ public class ReqRes {
 	final static String generateHeader(String header, String value) {
 		return String.format("%s: %s\r\n", header, value);
 	}
-	
+		
 	final static String generateCookieHeader(Cookie c) {
 		// TODO expires, httponly ? 
 		// Set-Cookie: name=value(; "attr"=value)*

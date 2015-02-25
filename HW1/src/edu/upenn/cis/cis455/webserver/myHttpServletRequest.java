@@ -27,6 +27,7 @@ public class myHttpServletRequest implements HttpServletRequest {
 
 	private Socket client;
 	private BufferedReader in;
+	private myServletContext context;
 	private Logger logger = Logger.getLogger(HttpRequest.class);
 	
 	private String method; 
@@ -54,12 +55,18 @@ public class myHttpServletRequest implements HttpServletRequest {
 	
 	private HashMap<String,Object> attributes;
 	private HashMap<String,String[]> params;
-	private myHttpSession session;
 	
-	public myHttpServletRequest(Socket client, myHttpSession session) throws IOException {
+	private String reqSessionId;
+	private myHttpSession session;
+	private HashMap<String, myHttpSession> sessions;
+	private myHttpServletResponse res;
+	
+	public myHttpServletRequest(Socket client, myServletContext context, myHttpServletResponse res) throws IOException {
 		this.client = client;
 		this.in = new BufferedReader(new InputStreamReader(client.getInputStream()));
-		this.session = session;
+		this.context = context;
+		this.sessions = (HashMap<String, myHttpSession>) context.getAttribute("Sessions");
+		this.res = res;
 		
 		// Build request
 		String line;
@@ -111,8 +118,12 @@ public class myHttpServletRequest implements HttpServletRequest {
 		if (components.length > 1) { // line format = Header: value 
 			if (components[0] == "Cookie") {
 				String[] cookies = components[1].split(";");
-				for (String c : cookies) {
-					this.cookies.add(ReqRes.parseCookieHeader(c.trim()));
+				for (String cStr : cookies) {
+					Cookie c = ReqRes.parseCookieHeader(cStr.trim());
+					if (c.getName().equalsIgnoreCase("jsessionid")) {
+						this.setSession(c.getValue());
+					}
+					this.cookies.add(c);
 				}
 			} else {
 				ArrayList<String> values = this.headers.get(components[0]);
@@ -413,8 +424,7 @@ public class myHttpServletRequest implements HttpServletRequest {
 
 	@Override
 	public String getRequestedSessionId() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.reqSessionId;
 	}
 
 	@Override
@@ -429,24 +439,41 @@ public class myHttpServletRequest implements HttpServletRequest {
 
 	@Override
 	public HttpSession getSession(boolean create) {
-		return (create && this.session == null) ? new myHttpSession() : this.session;
+		if (create && this.session == null) {
+			this.session = new myHttpSession(context);
+			// Set session cookie
+			res.addCookie(new Cookie("jsessionid", this.session.getId()));
+			// TODO: include expiration date??
+		}
+		return this.session;
+	}
+	
+	private void setSession(String id) {
+		this.reqSessionId = id;
+		// Set session to requestedSession, or new session if 
+		// the requested session does not exist in Sessions list
+		this.session = this.sessions.get(id);
+		if (this.session == null || !this.session.isValid()) getSession(true);
 	}
 
 	@Override
 	public boolean isRequestedSessionIdFromCookie() {
-		// TODO Auto-generated method stub
-		return false;
+		// We are handling all sessions with cookies 
+		// so if a reqSessionId exists it is from a cookie
+		return this.reqSessionId != null; 
 	}
 
 	@Override
 	public boolean isRequestedSessionIdFromURL() {
+		// We are handling all sessions with cookies
 		return false;
 	}
 
 	@Override
 	public boolean isRequestedSessionIdValid() {
-		// TODO Auto-generated method stub
-		return false;
+		if (this.reqSessionId == null) return false;
+		myHttpSession s = this.sessions.get(this.reqSessionId);
+		return s.isValid();
 	}
 	
 	//
