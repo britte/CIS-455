@@ -92,7 +92,7 @@ public class ReqRes {
 	// Request Parsing Helpers
 	final static Cookie parseCookieHeader(String cookie) {
 		String[] c = cookie.split("=");
-		return new Cookie(c[0], c[1]);
+		return (c.length == 2) ? new Cookie(c[0], c[1]) : null;
 	}
 	
 	final static boolean modifiedSince(String modString, File f) {

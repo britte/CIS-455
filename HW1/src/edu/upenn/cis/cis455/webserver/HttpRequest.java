@@ -40,7 +40,7 @@ public class HttpRequest {
 		
 		readStatusLine();
 		readHeaders();
-		readBody();
+//		readBody();
 	}
 	
 	//
@@ -95,11 +95,12 @@ public class HttpRequest {
 	
 	private void readBody() throws IOException {		
 		String bodyLine = in.readLine();
-		while (!bodyLine.isEmpty()) {
+		while (!bodyLine.trim().isEmpty()) {
 			body.append(bodyLine);
 			bodyLine = in.readLine();
 		}
 	}
+	
 	
 	/*
 	 * Check for special headers which will require certain

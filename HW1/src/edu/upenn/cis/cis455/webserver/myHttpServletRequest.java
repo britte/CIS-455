@@ -34,7 +34,7 @@ public class myHttpServletRequest implements HttpServletRequest {
 	
 	private String reqPath; 
 	private String scheme = "http";
-	private String serverName; // TODO
+	private String serverName = ""; 
 	private int serverPort = 80; 
 	private String contextPath = ""; 
 	private String servletPath = "";
@@ -88,8 +88,10 @@ public class myHttpServletRequest implements HttpServletRequest {
 		if (values != null && values.size() > 0) {
 			for (String v : values) {
 				String[] cookies = v.split(";");
+				if (cookies.length == 0) return;
 				for (String cStr : cookies) {
 					Cookie c = ReqRes.parseCookieHeader(cStr.trim());
+					if (c == null) continue;
 					if (c.getName().equalsIgnoreCase("jsessionid")) {
 						this.setSession(c.getValue());
 					}
@@ -111,6 +113,13 @@ public class myHttpServletRequest implements HttpServletRequest {
 				}
 			}
 		}
+	}
+	
+	private void parseHost(String hostName) {
+		// format: www.domain.com[:port]
+		String[] domainPort = hostName.split(":");
+		if (domainPort.length == 0) return;
+		this.serverName = hostName[0]
 	}
 		
 	private void parsePath(String path) {

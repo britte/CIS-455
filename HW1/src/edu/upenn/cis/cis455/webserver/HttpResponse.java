@@ -103,6 +103,8 @@ public class HttpResponse {
 				if (get) {
 					if (f.isFile()) sendFile(f);
 					else if (f.isDirectory()) sendDirectory(f.listFiles());	
+				} else {
+					out.writeBytes("\r\n");
 				}
 			}
 		} else {

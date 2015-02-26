@@ -42,7 +42,12 @@ public class myHttpServletResponse implements HttpServletResponse {
 		
 		private StringBuilder sb = new StringBuilder();
 		
-		public myPrintWriter(OutputStream stream) { super(stream); }
+		public myPrintWriter(BufferedOutputStream stream) { super(stream); }
+		
+		@Override
+		public void println() {
+			sb.append("\n");
+		}
 		
 		@Override
 		public void write(int c) {
@@ -78,6 +83,7 @@ public class myHttpServletResponse implements HttpServletResponse {
 		
 		@Override
 		public void flush() {
+			super.flush();
 			contentLength = sb.length();
 			generateHeaders();
 			writer.print("\n\r");
@@ -114,6 +120,11 @@ public class myHttpServletResponse implements HttpServletResponse {
 				this.print(ReqRes.generateCookieHeader(c));
 			}
 		}
+	}
+	
+	public void close() throws IOException {
+		writer.close();
+		client.close();
 	}
 	
 	//

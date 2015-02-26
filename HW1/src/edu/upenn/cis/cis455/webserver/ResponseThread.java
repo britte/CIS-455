@@ -59,7 +59,7 @@ public class ResponseThread extends PoolThread {
 					try {
 						c.servlet.service(myReq, myRes);
 						if (!myRes.isCommitted()) myRes.flushBuffer();
-						req.getClient().close();
+						myRes.close();
 					} catch (Exception e) {
 						// TODO: handle expection response
 					}
