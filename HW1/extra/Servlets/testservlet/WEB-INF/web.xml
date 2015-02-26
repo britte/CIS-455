@@ -8,7 +8,7 @@
      
      <servlet>
          <servlet-name>TestServlet</servlet-name>
-         <servlet-class>edu.upenn.cis455.TestServlet</servlet-class>
+         <servlet-class>edu.upenn.cis.cis455.TestServlet</servlet-class>
      </servlet>
 
      <servlet-mapping>

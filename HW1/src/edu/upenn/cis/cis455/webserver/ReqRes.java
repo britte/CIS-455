@@ -58,6 +58,9 @@ public class ReqRes {
 		}
 	}
 	
+	final static String htmlStart = "<!DOCTYPE html><html><body>";
+	final static String htmlEnd = "</body></html>";
+	
 	final static String generateStatus(int statusCode) {
 		// TODO get version 
 		String message = ReqRes.statusMsg(statusCode);

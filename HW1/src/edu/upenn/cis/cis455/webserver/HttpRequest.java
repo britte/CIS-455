@@ -40,7 +40,7 @@ public class HttpRequest {
 		
 		readStatusLine();
 		readHeaders();
-		// TODO: parse body
+		readBody();
 	}
 	
 	//
@@ -93,6 +93,14 @@ public class HttpRequest {
 		}
 	}
 	
+	private void readBody() throws IOException {		
+		String bodyLine = in.readLine();
+		while (!bodyLine.isEmpty()) {
+			body.append(bodyLine);
+			bodyLine = in.readLine();
+		}
+	}
+	
 	/*
 	 * Check for special headers which will require certain
 	 * behavior in the response handling
@@ -103,10 +111,6 @@ public class HttpRequest {
 			case "If-Modified-Since": this.ifMod  = true; break;
 			case "If-Unmodified-Since": this.ifUnmod = true; break;
 		}
-	}
-	
-	private void parseBody(String body) {
-		this.body.append(body);
 	}
 	
 	public Socket getClient() { return client; }

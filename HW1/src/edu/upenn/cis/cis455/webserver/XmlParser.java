@@ -113,7 +113,7 @@ public class XmlParser {
 					System.err.println("Servlet mapping value '" + value + "' without url");
 					System.exit(-1);
 				}
-				m_servletMappings.put(m_mappingName, value);
+				m_servletMappings.put(value, m_mappingName);
 				m_mappingName = null;
 				m_state = 0;
 			} else if (m_state == 6) {

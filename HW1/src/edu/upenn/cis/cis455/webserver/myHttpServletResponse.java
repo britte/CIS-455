@@ -8,7 +8,9 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Locale;
+import java.util.Map;
 import java.net.Socket;
 
 import javax.servlet.ServletOutputStream;
@@ -44,50 +46,74 @@ public class myHttpServletResponse implements HttpServletResponse {
 		
 		@Override
 		public void write(int c) {
-			if (isCommitted) {
-				super.write(c);
-			} else {
-				this.sb.append(c);
-			}
+			if (isCommitted) super.write(c);
+			else this.sb.append(c);
+		}
+		
+		@Override
+		public void write(char[] buf) {
+			if (isCommitted) super.write(buf);
+			else this.sb.append(buf);
+		}
+		
+		@Override
+		//TODO
+		public void write(char[] buf, int off, int len) {
+			if (isCommitted) super.write(buf, off, len);
+			else this.sb.append(buf);
+		}
+		
+		@Override
+		public void write(String s) {
+			if (isCommitted) super.write(s);
+			else this.sb.append(s);
+		}
+		
+		@Override
+		// TODO
+		public void write(String s, int off, int len) {
+			if (isCommitted) super.write(s, off, len);
+			else this.sb.append(s);
+		}
+		
+		@Override
+		public void flush() {
+			contentLength = sb.length();
+			generateHeaders();
+			writer.print("\n\r");
+			writer.print(sb.toString());
+			super.flush();
+		}
+		
+		public void clear() {
+			this.sb = new StringBuilder();
 		}
 		
 		private void generateHeaders() {
 			isCommitted = true;
-			writer.print(ReqRes.generateStatus(statusCode)); // Status header
-			// Server header
-			if (headers.containsKey("Server")) {
-				writer.print(ReqRes.generateHeader("Server", headers.get("Server")));
-			} else {
-				writer.print(ReqRes.generateHeader("Server", "HttpServer/1.0"));
-			}
+			this.print(ReqRes.generateStatus(statusCode)); // Status header
 			
-			// Date header
-			if (headers.containsKey("Date")) {
-				writer.print(ReqRes.generateHeader("Date", headers.get("Date")));
-			} else {
-				writer.print(ReqRes.generateHeader("Date", ReqRes.formatDate(new Date())));
-			}
+			// Set certain headers
+			setHeader("Server", "HttpServer/1.0");
+			setHeader("Date", ReqRes.formatDate(new Date()));
+			setHeader("Last-Modified", ReqRes.formatDate(ReqRes.getLastModified()));
+			setHeader("Connection", "close");
+			setHeader("Content-Type", contentType);
+			setHeader("Content-Length", Integer.toString(contentLength));
 			
-			// Last Modified header
-			if (headers.containsKey("Last-Modified")) {
-				writer.print(ReqRes.generateHeader("Last-Modified", headers.get("Last-Modified")));
-			} else {
-				writer.print(ReqRes.generateHeader("Server", ReqRes.formatDate(ReqRes.getLastModified())));
-			}
-			// TODO Connection Close header
-			
+			// Add headers 
+		    Iterator iter = headers.entrySet().iterator();
+		    while (iter.hasNext()) {
+		        Map.Entry<String,ArrayList<String>> pair = (Map.Entry) iter.next();
+		        this.print(ReqRes.generateHeader(pair.getKey(), pair.getValue()));
+		        iter.remove(); 
+		    }
+			    
 			// Cookies 
 			for (Cookie c : cookies) {
-				writer.print(ReqRes.generateCookieHeader(c));
+				this.print(ReqRes.generateCookieHeader(c));
 			}
 		}
-		
-		public void safeFlush() {
-			contentLength = sb.length();
-			generateHeaders();
-			writer.print(sb.toString());
-		}
-		
 	}
 	
 	//
@@ -96,7 +122,7 @@ public class myHttpServletResponse implements HttpServletResponse {
 	
 	@Override
 	public void flushBuffer() throws IOException {
-		this.writer.safeFlush();
+		this.writer.flush();
 	}
 
 	@Override
@@ -121,7 +147,7 @@ public class myHttpServletResponse implements HttpServletResponse {
 
 	@Override
 	public PrintWriter getWriter() throws IOException {
-		return this.writer; // TODO https://piazza.com/class/i4vn9s3ilfg2hs?cid=408
+		return this.writer;
 	}
 
 	@Override
@@ -131,22 +157,14 @@ public class myHttpServletResponse implements HttpServletResponse {
 
 	@Override
 	public void reset() {
-		try {
-			this.headers = new HashMap<String, ArrayList<String>>();
-			this.statusCode = this.SC_OK;
-			this.writer = new myPrintWriter(new BufferedOutputStream(this.client.getOutputStream(), this.bufferSize));
-		} catch (IOException e) {
-			// TODO 
-		}
+		this.headers = new HashMap<String, ArrayList<String>>();
+		this.statusCode = this.SC_OK;
+		this.writer.clear();
 	}
 
 	@Override
 	public void resetBuffer() {
-		try {
-			this.writer = new myPrintWriter(new BufferedOutputStream(this.client.getOutputStream(), this.bufferSize));
-		} catch (IOException e) {
-			// TODO 
-		}
+		this.writer.clear();
 	}
 	
 	@Override
@@ -219,23 +237,29 @@ public class myHttpServletResponse implements HttpServletResponse {
 	}
 
 	@Override
-	public void sendError(int sc) throws IOException {
-		// TODO Auto-generated method stub
-		setStatus(sc);
-		
+	public void sendError(int statusCode) throws IOException {
+		setStatus(statusCode);
+		this.writer.clear();
+		this.writer.flush();
 	}
 
 	@Override
-	public void sendError(int arg0, String arg1) throws IOException {
-		// TODO Auto-generated method stub
+	public void sendError(int statusCode, String msg) throws IOException {
+		// TODO: If an error-page declaration has been made for the web application corresponding to the
+		// status code passed in, it will be served back in preference to the suggested msg parameter.
+		setStatus(statusCode);
+		this.writer.clear();
 		
+		this.writer.print(ReqRes.htmlStart);
+		this.writer.print(msg);
+		this.writer.print(ReqRes.htmlEnd);
+		
+		this.writer.flush();
 	}
 
 	@Override
 	public void sendRedirect(String arg0) throws IOException {
-		// TODO Auto-generated method stub
-		// Should be run through encodeRedirectURL
-
+		// TODO: Auto-generated method stub
 	}
 
 	@Override

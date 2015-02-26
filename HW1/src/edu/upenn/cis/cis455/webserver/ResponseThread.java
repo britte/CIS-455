@@ -50,10 +50,19 @@ public class ResponseThread extends PoolThread {
 				// Determine if this request is standards
 				// or if it is for a servlet
 				String reqPath = req.getPath(); // TODO: handle absolute path
+				if (reqPath.indexOf("/") == 0) reqPath = reqPath.replaceFirst("/", "");
 				ServerContext c = this.pool.getContext();
-				if (c.servletContext != null && c.servletMappings.containsKey(reqPath)) {
-					if (!c.isInit) c.servlet.init();
-					c.servlet.service(new myHttpServletRequest(req, c.servletContext), new myHttpServletResponse(req.getClient()));
+				if (c.servletContext != null && isServletPath(reqPath, c.servletMappings)) {
+					if (!c.isInit) c.servlet.init(c.servletConfig);
+					myHttpServletRequest myReq = new myHttpServletRequest(req, c.servletContext, c.servlet.getServletName());
+					myHttpServletResponse myRes = new myHttpServletResponse(req.getClient());
+					try {
+						c.servlet.service(myReq, myRes);
+						if (!myRes.isCommitted()) myRes.flushBuffer();
+						req.getClient().close();
+					} catch (Exception e) {
+						// TODO: handle expection response
+					}
 				} else {
 					HttpResponse res = new HttpResponse(req, c.root, this.pool);
 				}
@@ -73,5 +82,18 @@ public class ResponseThread extends PoolThread {
 	
 	public String getStatus() {
 		return this.getState().toString() + " " + (this.req != null ? this.req.getPath() : "");
+	}
+	
+	private boolean isServletPath(String path, HashMap<String,String> pathMappings) {
+		for (String map : pathMappings.keySet()) {
+			if (map.endsWith("/*") && map.startsWith(path)) { // Path mapping (special case)
+				if (path.startsWith(map.substring(0, map.lastIndexOf("/*")))) return true;
+			} else if (map.endsWith("*")) { // Path mapping (special case)
+				if (path.startsWith(map.substring(0, map.lastIndexOf("*")))) return true;
+			} else { // Exact mapping
+				if (path.equals(map)) return true;
+			}
+		}
+		return false;
 	}
 }
