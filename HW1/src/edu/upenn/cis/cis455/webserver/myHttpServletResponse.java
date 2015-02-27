@@ -46,7 +46,7 @@ public class myHttpServletResponse implements HttpServletResponse {
 		
 		@Override
 		public void println() {
-			sb.append("\n");
+			sb.append("");
 		}
 		
 		@Override
@@ -83,10 +83,10 @@ public class myHttpServletResponse implements HttpServletResponse {
 		
 		@Override
 		public void flush() {
-			super.flush();
 			contentLength = sb.length();
 			generateHeaders();
 			writer.print("\n\r");
+			String s = sb.toString();
 			writer.print(sb.toString());
 			super.flush();
 		}

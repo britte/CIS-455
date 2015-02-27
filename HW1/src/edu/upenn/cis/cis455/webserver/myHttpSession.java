@@ -22,6 +22,7 @@ public class myHttpSession implements HttpSession {
 	
 	public myHttpSession(myServletContext context) {
 		this.creationTime = new Date();
+		this.lastAccessedTime = this.creationTime;
 		this.id = UUID.randomUUID().toString();
 		this.context = context;
 		HashMap<String, myHttpSession> sessions = (HashMap<String, myHttpSession>) this.context.getAttribute("Sessions");
@@ -72,7 +73,6 @@ public class myHttpSession implements HttpSession {
 
 	@Override
 	public void invalidate() {
-		// TODO Clarify "unbinds any objects associated"
 		this.valid = false;
 		// Remove session from context sessions list
 		HashMap<String, myHttpSession> sessions = (HashMap<String, myHttpSession>) this.context.getAttribute("Sessions");

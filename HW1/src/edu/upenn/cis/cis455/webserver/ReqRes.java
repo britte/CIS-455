@@ -81,12 +81,15 @@ public class ReqRes {
 		// TODO expires, httponly ? 
 		// Set-Cookie: name=value(; "attr"=value)*
 		StringBuilder s = new StringBuilder();
-		s.append(c.getName() + "=" + c.getValue() + ";");
-		s.append("Max-Age=" + Integer.toString(c.getMaxAge()) + ";");
-		s.append("Domain=" + c.getDomain() + ";");
-		s.append("Path=" + c.getPath() + ";");
-		if (c.getSecure()) s.append("Secure");
-		return s.toString();
+		s.append("Set-Cookie: ");
+		s.append(c.getName() + "=" + c.getValue());
+//		s.append("Max-Age=" + Integer.toString(c.getMaxAge()));
+//		s.append("Domain=" + c.getDomain() + ";");
+//		s.append("Path=" + c.getPath());
+		if (c.getSecure()) s.append("; Secure");
+		s.append("\r\n");
+		String string = s.toString();
+		return string;
 	}
 	
 	// Request Parsing Helpers

@@ -47,8 +47,8 @@ public class myHttpServletRequest implements HttpServletRequest {
 	private ArrayList<Cookie> cookies = new ArrayList<Cookie>();
 
 	private String characterEncoding = "ISO-8859-1";
-	private int contentLength; // TODO
-	private String contentType; // TODO
+	private int contentLength; 
+	private String contentType; 
 	private Locale locale = null;
 	
 	private StringBuilder body;
@@ -61,7 +61,14 @@ public class myHttpServletRequest implements HttpServletRequest {
 	private HashMap<String, myHttpSession> sessions = new HashMap<String,myHttpSession>();
 	private myHttpServletResponse res;
 	
-	public myHttpServletRequest(HttpRequest req, myServletContext context, String servletPath) throws IOException {
+	public myHttpServletRequest(HttpRequest req, myHttpServletResponse res, myServletContext context, String servletPath) throws IOException {
+		this.client = req.getClient();
+		this.in = req.getReader();
+//		this.in = new BufferedReader(new InputStreamReader(client.getInputStream()));
+		this.context = context;
+		this.res = res;
+		this.sessions = (HashMap<String, myHttpSession>) context.getAttribute("Sessions");
+		
 		this.method = req.getMethod();
 		this.reqPath = req.getPath();
 		// TODO: make sure reqPath is absolute
@@ -76,11 +83,6 @@ public class myHttpServletRequest implements HttpServletRequest {
 			parseParams(this.body.toString());
 		}
 		
-		this.client = req.getClient();
-		this.in = req.getReader();
-//		this.in = new BufferedReader(new InputStreamReader(client.getInputStream()));
-		this.context = context;
-		this.sessions = (HashMap<String, myHttpSession>) context.getAttribute("Sessions");
 	}
 		
 	private void parseCookies() {
@@ -102,7 +104,6 @@ public class myHttpServletRequest implements HttpServletRequest {
 	}
 	
 	private void parseParams(String source) {
-		// TODO: what even the fuck
 		if (!source.isEmpty()) {
 			String[] paramPairs = this.queryString.split("&");
 			for (int i = 0; i < paramPairs.length; i ++) {
@@ -115,12 +116,12 @@ public class myHttpServletRequest implements HttpServletRequest {
 		}
 	}
 	
-	private void parseHost(String hostName) {
-		// format: www.domain.com[:port]
-		String[] domainPort = hostName.split(":");
-		if (domainPort.length == 0) return;
-		this.serverName = hostName[0]
-	}
+//	private void parseHost(String hostName) {
+//		// format: www.domain.com[:port]
+//		String[] domainPort = hostName.split(":");
+//		if (domainPort.length == 0) return;
+//		this.serverName = hostName[0]
+//	}
 		
 	private void parsePath(String path) {
 		String url = path;
@@ -417,7 +418,10 @@ public class myHttpServletRequest implements HttpServletRequest {
 		if (create && this.session == null) {
 			this.session = new myHttpSession(context);
 			// Set session cookie
-			res.addCookie(new Cookie("jsessionid", this.session.getId()));
+			Cookie c = new Cookie("jsessionid", this.session.getId());
+			c.setDomain("");
+			c.setPath("/test"); //TODO
+			res.addCookie(c);
 			// TODO: include expiration date??
 		}
 		return this.session;

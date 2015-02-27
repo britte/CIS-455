@@ -9,6 +9,7 @@ public class TestServlet extends HttpServlet {
        throws java.io.IOException
   {
     response.setContentType("text/html");
+    HttpSession s = request.getSession(true);
     PrintWriter out = response.getWriter();
     out.println("<html><head><title>Test</title></head><body>");
     out.println("RequestURL: ["+request.getRequestURL()+"]<br>");

@@ -2,17 +2,12 @@ package edu.upenn.cis.cis455.webserver;
 
 import java.io.IOException;
 import java.net.ServerSocket;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Set;
 import java.util.Vector;
 
 import javax.servlet.http.HttpServlet;
 
 import org.apache.log4j.Logger;
-import org.w3c.dom.Document;
-
-import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader.Array;
 
 public class HttpServer {
 	
@@ -46,20 +41,7 @@ public class HttpServer {
 		while (pool.running){}
 		System.exit(0);
 	}
-	
-	public static void createServlet(String className) {
-		try {
-			Class servletClass = Class.forName(className);
-			context.servlet = (HttpServlet) servletClass.newInstance();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-		}
-	}
-	
+		
 	public static void main(String args[]) throws Exception {
 		switch (args.length) {
 			case 0: 
@@ -92,14 +74,7 @@ public class HttpServer {
 					
 					context.servletContext = parser.getServletContext();
 					context.servletContext.setAttribute("Sessions", new HashMap<String, myHttpSession>());
-					context.servletConfig = parser.getServletConfig();
-					context.servletMappings = parser.servletMappings;
-					createServlet(parser.servletClass);
-					if (parser.loadOnStart) {
-						logger.info("Starting servlet " + parser.servletName);
-						context.servlet.init(context.servletConfig);
-						context.isInit = true;
-					}		
+					context.servlets = parser.getServletMap();
 					logger.info(context.servletPath + " parsed");
 					run();
 				} catch (NumberFormatException e) {

@@ -3,7 +3,10 @@ package edu.upenn.cis.cis455.webserver;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
@@ -15,16 +18,14 @@ public class XmlParser {
 	
 	private static Logger logger = Logger.getLogger(HttpServer.class);	
 	
-	protected String root;
-	protected String appPath;
-	protected String displayName;
-	protected boolean loadOnStart = false;
-//	protected HashMap<String,String> servlets; // multiple servlet model
-	protected String servletName;
-	protected String servletClass;
-	protected HashMap<String,String> servletMappings;
-	protected HashMap<String,String> contextParams;
-	protected HashMap<String, HashMap<String,String>> servletParams;
+	private String root;
+	private String appPath;
+	private String displayName;
+	private HashMap<String,String> servletClasses; 
+	private ArrayList<String> loadOnStart;
+	private HashMap<String,String> servletMappings;
+	private HashMap<String,String> contextParams;
+	private HashMap<String, HashMap<String,String>> servletParams;
 	
 	public XmlParser(String root, String path) {
 		this.root = root;
@@ -38,11 +39,10 @@ public class XmlParser {
 		private int m_state = 0;
 		private String m_displayName;
 		private String m_servletName;
-		private String m_servletClass;
 		private String m_paramName;
 		private String m_mappingName;
-		private boolean m_load_on_start = false;
-//		HashMap<String,String> m_servlets = new HashMap<String,String>();
+		HashMap<String,String> m_servlets = new HashMap<String,String>();
+		ArrayList<String> m_load_on_start = new ArrayList<String>();
 		HashMap<String,String> m_servletMappings = new HashMap<String,String>();
 		HashMap<String,String> m_contextParams = new HashMap<String,String>();
 		HashMap<String,HashMap<String,String>> m_servletParams = new HashMap<String,HashMap<String,String>>();
@@ -76,8 +76,7 @@ public class XmlParser {
 				m_servletName = value;
 				m_state = 0;
 			} else if (m_state == 2) {
-//				m_servlet.put(m_servletName, value);
-				m_servletClass = value;
+				m_servlets.put(m_servletName, value);
 				m_state = 0;
 			} else if (m_state == 30 || m_state == 40) {
 				if (value.trim().length() > 0) {
@@ -121,7 +120,7 @@ public class XmlParser {
 				m_state = 0;
 			} else if (m_state == 7) {
 				// Since we only support one servlet, load order is moot
-				m_load_on_start = true;
+				m_load_on_start.add(m_servletName);
 				m_state = 0;
 			}
 		}
@@ -137,36 +136,68 @@ public class XmlParser {
 		SAXParser parser = SAXParserFactory.newInstance().newSAXParser();
 		parser.parse(file, h);
 		
-		this.servletName = h.m_servletName;
-		this.servletClass = h.m_servletClass;
+		this.servletClasses = h.m_servlets;
+		this.loadOnStart = h.m_load_on_start;
 		this.displayName = h.m_displayName;
 		this.contextParams = h.m_contextParams;
 		this.servletParams = h.m_servletParams;
 		this.servletMappings = h.m_servletMappings;
-		this.loadOnStart = h.m_load_on_start;
 	}
 		
+	/*
+	 * @return map of servlets paths => corresponding HttpServlets
+	 * (if no Servlet exists, path maps to null)
+	 */
+	public HashMap<String,myServletWrapper> getServletMap() { 
+		HashMap<String,myServletWrapper> servlets = this.getServlets();
+		HashMap<String,myServletWrapper> mappedServlets = new HashMap<String,myServletWrapper>();
+		
+		// Mappings of form: path => servlet name
+		for (Map.Entry<String, String> map: this.servletMappings.entrySet()) {
+			mappedServlets.put(map.getKey(), servlets.get(map.getValue()));
+		}
+		
+		return mappedServlets; 
+	}
+	
+	/*
+	 * Convert all servlet classes in the app to HttpServelts; initialize when appropriate
+	 * @return map of servlets names => corresponding HttpServlets
+	 */
+	private HashMap<String,myServletWrapper> getServlets() { 
+		HashMap<String,myServletWrapper> servlets = new HashMap<String,myServletWrapper>();
+		
+		for (Map.Entry<String, String> servlet : this.servletClasses.entrySet()) {
+			String sName = servlet.getKey();
+			String sClass = servlet.getValue();
+			try {
+				Class c = Class.forName(sClass);
+				HttpServlet rawServlet = (HttpServlet) c.newInstance();
+				myServletWrapper s = new myServletWrapper (rawServlet, getServletConfig(sName));
+				if (this.loadOnStart.contains(sName)) s.configInit();
+				servlets.put(servlet.getKey(), s);
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+			} catch (InstantiationException e) {
+				// TODO Auto-generated catch block
+			} catch (IllegalAccessException e) {
+				// TODO Auto-generated catch block
+			} catch (ServletException e) {
+				// TODO Auto-generated catch block
+			}
+		}
+		
+		return servlets; 
+	}
+	
 	public myServletContext getServletContext() {
 		return new myServletContext(this.root, this.displayName, this.contextParams);
 	}
-	
-	
-	public myServletConfig getServletConfig(){
-		if (this.servletName == null) return null;
-		else {
-			myServletContext context = getServletContext();
-			HashMap<String,String> params = this.servletParams.get(this.servletName);
-			return new myServletConfig(this.servletName, context, params);
-		}
-	}
-	
-	public myServletConfig getServletConfig(String servletName){
-		if (this.servletName == null) return null;
-		else {
-			myServletContext context = getServletContext();
-			HashMap<String,String> params = this.servletParams.get(this.servletName);
-			return new myServletConfig(this.servletName, context, params);
-		}
+		
+	private myServletConfig getServletConfig(String servletName){
+		myServletContext context = getServletContext();
+		HashMap<String,String> params = this.servletParams.get(servletName);
+		return new myServletConfig(servletName, context, params);
 	}
 }
 

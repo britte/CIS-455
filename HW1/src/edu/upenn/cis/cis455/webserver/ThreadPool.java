@@ -35,6 +35,8 @@ public class ThreadPool {
 	
 	public void shutdown() {
 		this.running = false;
-		this.context.servlet.destroy();
+		for (myServletWrapper s : this.context.servlets.values()) {
+			s.servlet.destroy();
+		}
 	};
 }
