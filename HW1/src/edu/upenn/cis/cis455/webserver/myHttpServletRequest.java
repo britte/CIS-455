@@ -36,7 +36,7 @@ public class myHttpServletRequest implements HttpServletRequest {
 	private String scheme = "http";
 	private String serverName = ""; 
 	private int serverPort = 80; 
-	private String contextPath = ""; 
+	private String contextPath = ""; // Single app => no context path 
 	private String servletPath = "";
 	private String pathInfo = ""; 
 	private String queryString = ""; 
@@ -51,7 +51,7 @@ public class myHttpServletRequest implements HttpServletRequest {
 	private String contentType; 
 	private Locale locale = null;
 	
-	private StringBuilder body;
+	private String body;
 	
 	private HashMap<String,Object> attributes = new HashMap<String,Object>();
 	private HashMap<String,String[]> params = new HashMap<String,String[]>();
@@ -68,16 +68,16 @@ public class myHttpServletRequest implements HttpServletRequest {
 		this.context = context;
 		this.res = res;
 		this.sessions = (HashMap<String, myHttpSession>) context.getAttribute("Sessions");
+		this.servletPath = (servletPath.startsWith("/")) ? servletPath : "/" + servletPath;
 		
 		this.method = req.getMethod();
 		this.reqPath = req.getPath();
-		// TODO: make sure reqPath is absolute
-		parsePath(reqPath);
 		this.version = req.getVersion();
 		this.headers = req.getHeaders();
-		parseCookies();
+		this.body = req.getBody();
 		
-		this.servletPath = servletPath;
+		parsePath(reqPath);
+		parseCookies();
 		parseParams(this.queryString);
 		if (this.method.equals("POST") && this.getHeader("Content-Type").equals("application/x-www-form-urlencoded")) {
 			parseParams(this.body.toString());
@@ -85,7 +85,7 @@ public class myHttpServletRequest implements HttpServletRequest {
 		
 	}
 		
-	private void parseCookies() {
+	protected void parseCookies() {
 		ArrayList<String> values = this.headers.get("Cookie");
 		if (values != null && values.size() > 0) {
 			for (String v : values) {
@@ -103,9 +103,9 @@ public class myHttpServletRequest implements HttpServletRequest {
 		}
 	}
 	
-	private void parseParams(String source) {
+	protected void parseParams(String source) {
 		if (!source.isEmpty()) {
-			String[] paramPairs = this.queryString.split("&");
+			String[] paramPairs = source.split("&");
 			for (int i = 0; i < paramPairs.length; i ++) {
 				String p = paramPairs[i];
 				String[] nameValue = p.split("=");
@@ -115,15 +115,13 @@ public class myHttpServletRequest implements HttpServletRequest {
 			}
 		}
 	}
-	
-//	private void parseHost(String hostName) {
-//		// format: www.domain.com[:port]
-//		String[] domainPort = hostName.split(":");
-//		if (domainPort.length == 0) return;
-//		this.serverName = hostName[0]
-//	}
-		
-	private void parsePath(String path) {
+			
+	protected void parsePath(String path) {
+		// If the request path is NOT absolute, append the host header to create absolute path
+		if (path.indexOf("http://") == -1) {
+			String host = this.getHeader("Host");
+			path = (host != null) ? host + path : path;
+		}
 		String url = path;
 		// format: scheme://domain[:port]/path[?query][#fragment_id]
 		if (url.indexOf("#") != -1) {
@@ -145,7 +143,7 @@ public class myHttpServletRequest implements HttpServletRequest {
 		if (url.indexOf("/") != -1) {
 			String[] domainPath = url.split("/", 2);
 			url = domainPath[0];
-			this.pathInfo = domainPath[0].replaceFirst(this.servletPath, "");
+			this.pathInfo = "/" + domainPath[0].replaceFirst(this.servletPath, "");
 		}
 		// format: domain[:port]
 		if (url.indexOf(":") != -1) {

@@ -12,11 +12,17 @@ public class TestServlet extends HttpServlet {
     HttpSession s = request.getSession(true);
     PrintWriter out = response.getWriter();
     out.println("<html><head><title>Test</title></head><body>");
+    out.println("Scheme: ["+request.getScheme()+"]<br>");
+    out.println("ServerName: ["+request.getServerName()+"]<br>");
+    out.println("ServerPort: ["+request.getServerPort()+"]<br>");
+    out.println("ContextPath: ["+request.getContextPath()+"]<br>");
+    out.println("ServletPath: ["+request.getServletPath()+"]<br>");
     out.println("RequestURL: ["+request.getRequestURL()+"]<br>");
     out.println("RequestURI: ["+request.getRequestURI()+"]<br>");
     out.println("PathInfo: ["+request.getPathInfo()+"]<br>");
-    out.println("Context path: ["+request.getContextPath()+"]<br>");
+    out.println("QueryString: ["+request.getQueryString()+"]<br>");
     out.println("Header: ["+request.getHeader("Accept-Language")+"]<br>");
+    
     out.println("</body></html>");
   }
 }

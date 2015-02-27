@@ -29,7 +29,7 @@ public class HttpRequest {
 	private boolean ifMod = false;
 	private boolean ifUnmod = false;
 	
-	private StringBuilder body;
+	private StringBuilder body = new StringBuilder();
 	
 	static final Logger logger = Logger.getLogger(HttpRequest.class);
 	
@@ -40,7 +40,8 @@ public class HttpRequest {
 		
 		readStatusLine();
 		readHeaders();
-//		readBody();
+		readBody();
+		logger.info("Request recieved");
 	}
 	
 	//
@@ -60,7 +61,7 @@ public class HttpRequest {
 		this.method = request[0];
 		
 		// Check that header is a valid method
-		if (!(method.equals("GET") || method.equals("HEAD"))) {
+		if (!(method.equals("GET") || method.equals("HEAD") || method.equals("POST"))) {
 			// TODO: throw error and send response
 			logger.error("Invalid request: unrecognized method");
 			return;
@@ -75,7 +76,7 @@ public class HttpRequest {
 		String headerLine = in.readLine();
 		
 		while(!headerLine.isEmpty()) {
-			String components[] = headerLine.split(":");
+			String components[] = headerLine.split(":", 2);
 			if (components.length > 1) { // line format = Header: value 
 				ArrayList<String> values = this.headers.get(components[0]);
 				if (values == null) values = new ArrayList<String>();
@@ -93,11 +94,17 @@ public class HttpRequest {
 		}
 	}
 	
-	private void readBody() throws IOException {		
-		String bodyLine = in.readLine();
-		while (!bodyLine.trim().isEmpty()) {
-			body.append(bodyLine);
-			bodyLine = in.readLine();
+	private void readBody() throws IOException {
+		ArrayList<String> contentLengthVals = this.headers.get("Content-Length");
+		String contentLength = (contentLengthVals == null) ? null : contentLengthVals.get(0);
+		try {
+			int len = Integer.parseInt(contentLength);
+			for (int i = len; i > 0; i--) {
+				char c = (char) this.in.read();
+				this.body.append(c);
+			}
+		} catch (NumberFormatException e) {
+			// TODO throw bad format
 		}
 	}
 	
@@ -114,6 +121,7 @@ public class HttpRequest {
 		}
 	}
 	
+	public String getBody() { return body.toString(); }
 	public Socket getClient() { return client; }
 	public BufferedReader getReader() { return in; }
 	public String getMethod() { return method; }

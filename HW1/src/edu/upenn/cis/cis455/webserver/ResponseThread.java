@@ -52,12 +52,13 @@ public class ResponseThread extends PoolThread {
 				String reqPath = req.getPath(); // TODO: handle absolute path
 				if (reqPath.indexOf("/") == 0) reqPath = reqPath.replaceFirst("/", "");
 				ServerContext c = this.pool.getContext();
-				myServletWrapper s = isServletPath(reqPath, c.servlets);
-				if (s != null) {
+				String[] matchPath = isServletPath(reqPath, c.servlets); // [mapPath, servletPath]
+				if (matchPath != null) {
+					myServletWrapper s = c.servlets.get(matchPath[0]); 
 					if (!s.isInit()) s.configInit();
 					
 					myHttpServletResponse myRes = new myHttpServletResponse(req.getClient());
-					myHttpServletRequest myReq = new myHttpServletRequest(req, myRes, c.servletContext, s.servlet.getServletName());
+					myHttpServletRequest myReq = new myHttpServletRequest(req, myRes, c.servletContext, matchPath[1]);
 					try {
 						s.servlet.service(myReq, myRes);
 						if (!myRes.isCommitted()) myRes.flushBuffer();
@@ -86,17 +87,20 @@ public class ResponseThread extends PoolThread {
 		return this.getState().toString() + " " + (this.req != null ? this.req.getPath() : "");
 	}
 	
-	private myServletWrapper isServletPath(String reqPath, HashMap<String,myServletWrapper> pathMappings) {
-		for (Map.Entry<String, myServletWrapper> map : pathMappings.entrySet()) {
-			String p = map.getKey();
-			myServletWrapper s = map.getValue();
+	private String[] isServletPath(String reqPath, HashMap<String,myServletWrapper> pathMappings) {
+		for (String map : pathMappings.keySet()) {
+			//TODO ???
 			// ex: /foo/* matches /foo?param=1
 			// ex: /foo/bop* matches /foo/bop/boom
 			// ex: /foo matches /foo
-			if ((p.endsWith("/*") && reqPath.startsWith(p.substring(0, p.lastIndexOf("/*")))) || 
-				(p.endsWith("*") && reqPath.startsWith(p.substring(0, p.lastIndexOf("*")))) ||
-				(reqPath.equals(map))) {
-				return s; 
+			if (map.endsWith("/*")) {
+				String prefix = map.substring(0, map.lastIndexOf("/*"));
+				if (reqPath.startsWith(prefix)) return new String[]{map, prefix};
+			} else if (map.endsWith("*")) {
+				String prefix = map.substring(0, map.lastIndexOf("*"));
+				if (reqPath.startsWith(prefix)) return new String[]{map, prefix};
+			} else if (reqPath.equals(map)) {
+				return new String[]{map, map};
 			}
 		}
 		return null;
