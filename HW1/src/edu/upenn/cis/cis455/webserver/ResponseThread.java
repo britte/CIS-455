@@ -7,6 +7,7 @@ import java.util.Vector;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 
@@ -64,7 +65,7 @@ public class ResponseThread extends PoolThread {
 						if (!myRes.isCommitted()) myRes.flushBuffer();
 						myRes.close();
 					} catch (Exception e) {
-						// TODO: handle expection response
+						myRes.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 					}
 				} else {
 					HttpResponse res = new HttpResponse(req, c.root, this.pool);

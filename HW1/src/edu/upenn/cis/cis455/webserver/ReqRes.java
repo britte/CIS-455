@@ -50,9 +50,11 @@ public class ReqRes {
 			case 304: return "Not Modified";
 			case 400: return "Bad Request";
 			case 401: return "Unauthorized";
+			case 403: return "Forbidden";
 			case 404: return "Not Found";
 			case 408: return "Request Timeout";
 			case 412: return "Precondition Failed";
+			case 500: return "Internal Server Error";
 			case 501: return "Not Implemented";
 			default: return null;
 		}

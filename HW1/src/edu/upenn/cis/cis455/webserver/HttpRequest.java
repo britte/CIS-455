@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 
@@ -28,6 +29,7 @@ public class HttpRequest {
 	private boolean hasHost = false;
 	private boolean ifMod = false;
 	private boolean ifUnmod = false;
+	private int error = -1;
 	
 	private StringBuilder body = new StringBuilder();
 	
@@ -38,40 +40,42 @@ public class HttpRequest {
 		this.client = client;
 		in = new BufferedReader(new InputStreamReader(client.getInputStream()));
 		
-		readStatusLine();
-		readHeaders();
-		readBody();
-		logger.info("Request recieved");
+		if (!readStatusLine() || !readHeaders() || !readBody()) this.error = HttpServletResponse.SC_BAD_REQUEST;
+		logger.info("Request recieved.");
 	}
 	
 	//
 	// Parser Methods
 	//
 	
-	private void readStatusLine() throws IOException {
+	private boolean readStatusLine() throws IOException {
 		logger.info("Recieving request...");
 		String statusLine = this.in.readLine();
+		if (statusLine == null) {
+			logger.error("Invalid request: unparseable status line");
+			return false;
+		}
 		String request[] = statusLine.split(" ");
 		if (request.length != 3) {
-			// TODO: throw error and send response
 			logger.error("Invalid request: request line misformatted");
-			return;
+			return false;
 		}
 		
 		this.method = request[0];
 		
 		// Check that header is a valid method
 		if (!(method.equals("GET") || method.equals("HEAD") || method.equals("POST"))) {
-			// TODO: throw error and send response
+			// TODO: Throw 501 
 			logger.error("Invalid request: unrecognized method");
-			return;
+			return false;
 		}
 		
 		this.path = request[1];
 		this.version = request[2];
+		return true;
 	}
 	
-	private void readHeaders() throws IOException {
+	private boolean readHeaders() throws IOException {
 		
 		String headerLine = in.readLine();
 		
@@ -92,9 +96,10 @@ public class HttpRequest {
 			}
 			headerLine = in.readLine();
 		}
+		return true;
 	}
 	
-	private void readBody() throws IOException {
+	private boolean readBody() throws IOException {
 		ArrayList<String> contentLengthVals = this.headers.get("Content-Length");
 		String contentLength = (contentLengthVals == null) ? null : contentLengthVals.get(0);
 		try {
@@ -103,8 +108,10 @@ public class HttpRequest {
 				char c = (char) this.in.read();
 				this.body.append(c);
 			}
+			return true;
 		} catch (NumberFormatException e) {
-			// TODO throw bad format
+			//TODO logger
+			return false;
 		}
 	}
 	
@@ -130,7 +137,7 @@ public class HttpRequest {
 	
 	public HashMap<String, ArrayList<String>> getHeaders() { return this.headers; }
 	
-	public boolean hostComplient() { return (!version.equals("1.1") || hasHost); }
+	public boolean hostComplient() { return (!version.equals("HTTP/1.1") || hasHost); }
 	public String ifMod() { return (ifMod ? headers.get("If-Modified-Since").get(0) : null); }
 	public String ifUnmod() { return (ifUnmod ? headers.get("If-Unmodified-Since").get(0) : null); }
 }
